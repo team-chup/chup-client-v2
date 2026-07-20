@@ -1,4 +1,4 @@
-import { Geist } from 'next/font/google';
+import localFont from 'next/font/local';
 
 import type { Metadata } from 'next';
 
@@ -6,7 +6,12 @@ import { cn } from '@/lib/utils';
 
 import './globals.css';
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const pretendard = localFont({
+  src: './fonts/PretendardVariable.woff2',
+  weight: '45 920',
+  display: 'swap',
+  variable: '--font-pretendard',
+});
 
 export const metadata: Metadata = {
   title: 'CHUP',
@@ -19,7 +24,7 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang="ko" className={cn('font-sans', geist.variable)}>
+    <html lang="ko" className={cn('font-sans', pretendard.variable)}>
       <body>{children}</body>
     </html>
   );
