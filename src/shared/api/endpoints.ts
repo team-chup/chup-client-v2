@@ -1,3 +1,3 @@
 export const authUrl = {
-  putRefresh: () => '/auth/refresh',
-};
+  putRefresh: () => '/v2/auth/refresh',
+} as const;

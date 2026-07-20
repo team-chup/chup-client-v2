@@ -2,8 +2,6 @@ import localFont from 'next/font/local';
 
 import type { Metadata } from 'next';
 
-import { cn } from '@/shared/lib';
-
 import './globals.css';
 import Providers from './providers';
 
@@ -25,7 +23,7 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang="ko" className={cn('font-sans', pretendard.variable)}>
+    <html lang="ko" className={`font-sans ${pretendard.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>
