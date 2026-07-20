@@ -16,3 +16,7 @@ package-lock.json
 
 .claude/**/*.sh
 .claude/**/*.md
+.codex/**/*.sh
+.codex/**/*.md
+.agents/**/*.sh
+.agents/**/*.md
