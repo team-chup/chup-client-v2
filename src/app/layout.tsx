@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { cn } from '@/shared/lib';
 
 import './globals.css';
+import Providers from './providers';
 
 const pretendard = localFont({
   src: './fonts/PretendardVariable.woff2',
@@ -25,7 +26,9 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="ko" className={cn('font-sans', pretendard.variable)}>
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 };
