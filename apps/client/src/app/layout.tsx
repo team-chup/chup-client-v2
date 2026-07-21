@@ -2,8 +2,10 @@ import localFont from 'next/font/local';
 
 import type { Metadata } from 'next';
 
-import './globals.css';
 import Providers from './providers';
+
+import '@chup/ui/styles.css';
+import './globals.css';
 
 const pretendard = localFont({
   src: './fonts/PretendardVariable.woff2',
