@@ -1,0 +1,19 @@
+{
+  "name": "@chup/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base": "./base.mjs",
+    "./next": "./next.mjs"
+  },
+  "dependencies": {
+    "eslint-config-next": "16.2.10",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^14.0.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9",
+    "next": "^16"
+  }
+}
