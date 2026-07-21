@@ -1,0 +1,36 @@
+import localFont from 'next/font/local';
+
+import type { Metadata } from 'next';
+
+import Providers from './providers';
+
+import '@chup/ui/styles.css';
+import './globals.css';
+
+const pretendard = localFont({
+  src: './fonts/PretendardVariable.woff2',
+  weight: '45 920',
+  display: 'swap',
+  variable: '--font-pretendard',
+});
+
+export const metadata: Metadata = {
+  title: 'CHUP Admin',
+  description: '광주소프트웨어마이스터고등학교 채용 공고 관리 (관리자)',
+};
+
+const RootLayout = ({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) => {
+  return (
+    <html lang="ko" className={`font-sans ${pretendard.variable}`}>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+};
+
+export default RootLayout;
