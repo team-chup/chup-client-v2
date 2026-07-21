@@ -168,28 +168,30 @@ export const postcssConfig = {
 - shadcn `components.json` 의 `ui` alias 를 `packages/ui/src` 로 지정 → `shadcn add` 가 여기 씀. kebab-case 예외 규약 유지.
 - `dist/index.css` 는 이 라이브러리가 쓰는 tailwind 클래스만 컴파일한 결과.
 
-### @chup/core (shared + entities, tsc 빌드)
+### @chup/core (shared + entities, transpilePackages 소스 소비)
 
-- 기존 `src/shared/*` 이전: `api/{client,server,methods,endpoints}`, `lib/{cookie,utils}`, `config`.
+- 기존 `src/shared/*` 이전: `api/{client,server,methods,endpoints}`, `lib/cookie`, `config`. (`lib/utils`의 `cn`은 `@chup/ui`로 이동 — 아래 참고.)
 - FSD 배럴 유지: `index.ts`(클라) / `index.server.ts`(서버 전용).
 - 서버 전용(`api/server.ts`, `server-only`) 은 `/server` 서브패스로 격리 → 클라 번들 오염 차단.
+- **빌드 스텝 없음 — 소스 그대로 노출.** 각 앱이 `transpilePackages: ['@chup/core']`로 컴파일. 이유: `client.ts`의 `'use client'`, `server.ts`의 `server-only`/`next/headers` RSC 디렉티브는 tsc 프리빌드에서 깨지기 쉬움. 소스 소비가 안전하고 빌드 스텝도 준다.
 
 ```jsonc
 // package.json
 {
   "name": "@chup/core",
   "exports": {
-    "./shared": "./dist/shared/index.js",
-    "./shared/server": "./dist/shared/index.server.js",
-    "./entities/*": "./dist/entities/*/index.js",
+    "./shared": "./src/shared/index.ts",
+    "./shared/server": "./src/shared/index.server.ts",
   },
   "scripts": {
-    "build": "tsc",
     "check-types": "tsc --noEmit",
     "lint": "eslint src --max-warnings 0",
   },
 }
 ```
+
+- **`cn` 위치:** 기존 `shared/lib/utils.ts`의 `cn`은 `@chup/core`가 아닌 `@chup/ui`로 옮긴다. 순수 스타일 유틸(tailwind-merge)이고 shadcn `utils` alias가 ui와 콜로케이션을 기대하기 때문. `@chup/ui`가 무거운 core(axios)에 의존하지 않게 됨. core 엔티티 UI가 `cn`이 필요하면 `@chup/ui`에서 import(FSD상 entities→shared/ui 허용 방향).
+- `entities/*` export는 첫 엔티티가 생길 때 추가(현재 비어 YAGNI).
 
 - **인증 배관은 코드 수정 없이 이전.** `client.ts`의 갱신 큐(`isRefreshing`/`refreshQueue`), 별도 `refreshAxiosInstance`, 401 재요청 로직 그대로. 서브도메인 분리라 `accessToken` 쿠키가 앱별로 자연 격리되어 공용 코드로 문제없음.
 - **core 컴포넌트의 Tailwind:** `@chup/core` entities/ui(예: JobCard)가 쓰는 클래스는 예시의 ui처럼 자체 css 빌드하지 않고, 각 앱 `globals.css`가 core 소스를 `@source`로 스캔해 컴파일한다. 이유: entities는 도메인 개발로 자주 바뀌어 별도 css 빌드 스텝이 부담. ui(안정적 디자인 시스템)만 예시대로 빌드.
@@ -225,6 +227,7 @@ import './globals.css';
 
 - **폰트:** `next/font/local` 은 앱 경로 기준이라 Pretendard woff2 를 각 앱 `src/app/fonts/` 에 둔다(소량 중복 감수).
 - **환경변수:** `NEXT_PUBLIC_API_BASE_URL` 을 각 앱 `.env.local` 에. `next.config.ts` 의 rewrite 프록시(`/api/:path*`) 도 앱별로 둔다.
+- **`next.config.ts`:** `reactCompiler: true` 유지 + `transpilePackages: ['@chup/core']` 추가. `@chup/ui`는 prebuilt dist라 transpile 불필요.
 - **의존성:** 각 앱은 `@chup/core`, `@chup/ui`, `@chup/tailwind-config`, `@chup/eslint-config`, `@chup/typescript-config` 를 `workspace:*` 로 참조.
 
 ## 알려진 트레이드오프
@@ -251,8 +254,8 @@ import './globals.css';
    → 검증: `pnpm --filter @chup/ui build` → `dist/index.css` + `dist/*.js` 생성.
 
 4. **`@chup/core` 생성 + shared 이전**
-   → 기존 `src/shared/{api,lib,config}` → `packages/core/src/shared`. 배럴·export 맵·`/server` 서브패스 연결.
-   → 검증: `pnpm --filter @chup/core build` + `check-types` 통과.
+   → 기존 `src/shared/{api,lib/cookie,config}` → `packages/core/src/shared`. 배럴·export 맵(소스 경로)·`/server` 서브패스 연결. 빌드 스텝 없음.
+   → 검증: `pnpm --filter @chup/core check-types` 통과.
 
 5. **`apps/client` 이전**
    → 기존 `src/app`, `src/views` → `apps/client`. import 를 `@chup/core/*`·`@chup/ui` 로 교체. `postcss.config.js`, `globals.css`(`@source`+토큰 import), `layout.tsx`(ui css import), `.env.local`, rewrite 이전.
