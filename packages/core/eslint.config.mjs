@@ -1,3 +1,3 @@
-import { nextConfig } from '@chup/eslint-config/next';
+import { reactInternalConfig } from '@chup/eslint-config/react-internal';
 
-export default nextConfig;
+export default reactInternalConfig;
