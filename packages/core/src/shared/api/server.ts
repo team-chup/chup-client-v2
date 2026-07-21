@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 
 import axios from 'axios';
 
-import { API_BASE_URL, COOKIE_KEYS } from '@/shared/config';
+import { API_BASE_URL, COOKIE_KEYS } from '../config';
 
 import 'server-only';
 

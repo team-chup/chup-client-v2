@@ -2,9 +2,8 @@
 
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
-import { COOKIE_KEYS } from '@/shared/config';
-import { deleteCookie, getCookie, setCookie } from '@/shared/lib';
-
+import { COOKIE_KEYS } from '../config';
+import { deleteCookie, getCookie, setCookie } from '../lib/cookie';
 import { authUrl } from './endpoints';
 
 type QueueEntry = {
