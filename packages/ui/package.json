@@ -1,0 +1,45 @@
+{
+  "name": "@chup/ui",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./styles.css": "./dist/index.css",
+    "./*": "./dist/ui/*.js"
+  },
+  "scripts": {
+    "build": "pnpm build:styles && pnpm build:components",
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "build:components": "tsc",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.6.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.25.0",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@chup/eslint-config": "workspace:*",
+    "@chup/tailwind-config": "workspace:*",
+    "@chup/typescript-config": "workspace:*",
+    "@tailwindcss/cli": "^4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
