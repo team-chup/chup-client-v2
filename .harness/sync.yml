@@ -7,21 +7,25 @@ overrides:
   claude/skills/api-design: false
   claude/skills/database-schema: false
   claude/skills/docker: false
+  claude/skills/java-spring-arch: false
   claude/skills/kotest-guide: false
   claude/skills/kotlin-spring-arch: false
   claude/skills/migration-guide: false
   claude/skills/security-checklist: false
   claude/skills/systematic-debugging: false
   claude/skills/test: false
+  claude/skills/the-sdk: false
   codex/skills/api-design: false
   codex/skills/database-schema: false
   codex/skills/docker: false
+  codex/skills/java-spring-arch: false
   codex/skills/kotest-guide: false
   codex/skills/kotlin-spring-arch: false
   codex/skills/migration-guide: false
   codex/skills/security-checklist: false
   codex/skills/systematic-debugging: false
   codex/skills/test: false
+  codex/skills/the-sdk: false
 
   # 에이전트 — web-researcher만 유지
   claude/agents/contradiction-finder: false
@@ -44,3 +48,6 @@ overrides:
   codex/hooks-json: true
   codex/hooks/prettier: true
   codex/hooks/eslint: true
+
+# PR 설정 — 팀 공용어 한국어
+language: ko
