@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start --port 3000",
     "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
