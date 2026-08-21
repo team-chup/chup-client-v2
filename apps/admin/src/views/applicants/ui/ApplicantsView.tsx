@@ -1,25 +1,58 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@chup/ui';
 import { CircleAlert, Download, FileArchive, Inbox, Loader2 } from 'lucide-react';
 
-import { applicantUrl, StatusBadge, useGetApplicants } from '@/entities/application';
+import {
+  applicantUrl,
+  type ApplicationStatusType,
+  StatusBadge,
+  useGetApplicants,
+} from '@/entities/application';
 import { useGetAdminJobs } from '@/entities/dashboard';
 import { ApplicantResultButtons } from '@/features/applicant-result';
 
 import { formatAppliedAt } from '../lib/formatAppliedAt';
 
+const APPLICATION_STATUS_FILTERS: { label: string; value?: ApplicationStatusType }[] = [
+  { label: '전체' },
+  { label: '결과 대기', value: 'APPLIED' },
+  { label: '서류 합격', value: 'PASSED' },
+  { label: '서류 불합격', value: 'FAILED' },
+];
+
 const ApplicantsView = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const statusParam = searchParams.get('status');
+  const status: ApplicationStatusType | undefined =
+    statusParam === 'APPLIED' || statusParam === 'PASSED' || statusParam === 'FAILED'
+      ? statusParam
+      : undefined;
+
   const [jobPostingId, setJobPostingId] = useState<number>();
   const {
     data: applicants,
     isPending,
     isError,
   } = useGetApplicants(jobPostingId === undefined ? {} : { jobPostingId });
+  const filteredApplicants = useMemo(
+    () => (status ? applicants?.filter((applicant) => applicant.status === status) : applicants),
+    [applicants, status],
+  );
   const { data: jobs } = useGetAdminJobs();
   const selectedCompanyName = jobs?.find((job) => job.id === jobPostingId)?.companyName;
+
+  const handleStatusChange = (nextStatus?: ApplicationStatusType) => {
+    const params = new URLSearchParams(searchParams);
+    if (nextStatus) params.set('status', nextStatus);
+    else params.delete('status');
+    router.replace(params.size > 0 ? `/applicants?${params}` : '/applicants', { scroll: false });
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,12 +91,26 @@ const ApplicantsView = () => {
           </Button>
         ))}
       </div>
+      <div className="flex flex-wrap gap-2">
+        {APPLICATION_STATUS_FILTERS.map((filter) => (
+          <Button
+            key={filter.label}
+            size="sm"
+            variant={status === filter.value ? 'default' : 'outline'}
+            onClick={() => handleStatusChange(filter.value)}
+          >
+            {filter.label}
+          </Button>
+        ))}
+      </div>
       <Card className="pb-1">
         <CardHeader>
           <CardTitle>
             {selectedCompanyName ? `${selectedCompanyName} 지원자` : '전체 지원자'}
           </CardTitle>
-          <CardDescription>총 {applicants?.length ?? 0}명의 지원자가 있습니다.</CardDescription>
+          <CardDescription>
+            총 {filteredApplicants?.length ?? 0}명의 지원자가 있습니다.
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -100,7 +147,7 @@ const ApplicantsView = () => {
                     </td>
                   </tr>
                 )}
-                {!isPending && !isError && applicants?.length === 0 && (
+                {!isPending && !isError && filteredApplicants?.length === 0 && (
                   <tr>
                     <td colSpan={7} className="text-muted-foreground py-10 text-center text-sm">
                       <div className="flex flex-col items-center gap-2">
@@ -110,7 +157,7 @@ const ApplicantsView = () => {
                     </td>
                   </tr>
                 )}
-                {applicants?.map((applicant) => (
+                {filteredApplicants?.map((applicant) => (
                   <tr key={applicant.id} className="border-t">
                     <td className="px-5 py-4">
                       <div>
