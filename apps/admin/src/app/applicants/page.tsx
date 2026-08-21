@@ -1,3 +1,11 @@
+import { Suspense } from 'react';
+
 import { ApplicantsView } from '@/views/applicants';
 
-export default ApplicantsView;
+const ApplicantsPage = () => (
+  <Suspense>
+    <ApplicantsView />
+  </Suspense>
+);
+
+export default ApplicantsPage;

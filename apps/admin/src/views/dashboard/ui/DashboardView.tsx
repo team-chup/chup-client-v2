@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, StatCard } from '@chup/ui';
 import { BriefcaseBusiness, CircleAlert, Clock3, Inbox, Loader2, UsersRound } from 'lucide-react';
 
@@ -28,30 +30,42 @@ const DashboardView = () => {
         <p className="text-muted-foreground mt-2">오늘 확인할 채용 현황을 모아봤어요.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="모집중 공고"
-          value={dashboard ? `${dashboard.openJobs}개` : '-'}
-          note="현재 모집 중"
-          icon={BriefcaseBusiness}
-        />
-        <StatCard
-          label="전체 지원자"
-          value={dashboard ? `${dashboard.totalApplicants}명` : '-'}
-          note="누적 지원자"
-          icon={UsersRound}
-        />
-        <StatCard
-          label="결과 대기"
-          value={dashboard ? `${dashboard.pending}명` : '-'}
-          note="처리가 필요해요"
-          icon={Clock3}
-        />
-        <StatCard
-          label="서류 합격"
-          value={dashboard ? `${dashboard.passed}명` : '-'}
-          note="처리 완료"
-          icon={UsersRound}
-        />
+        <Link href="/postings?status=RECRUITING" className="group block focus-visible:outline-none">
+          <StatCard
+            label="모집중 공고"
+            value={dashboard ? `${dashboard.openJobs}개` : '-'}
+            note="현재 모집 중"
+            icon={BriefcaseBusiness}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
+        <Link href="/applicants" className="group block focus-visible:outline-none">
+          <StatCard
+            label="전체 지원자"
+            value={dashboard ? `${dashboard.totalApplicants}명` : '-'}
+            note="누적 지원자"
+            icon={UsersRound}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
+        <Link href="/applicants?status=APPLIED" className="group block focus-visible:outline-none">
+          <StatCard
+            label="결과 대기"
+            value={dashboard ? `${dashboard.pending}명` : '-'}
+            note="처리가 필요해요"
+            icon={Clock3}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
+        <Link href="/applicants?status=PASSED" className="group block focus-visible:outline-none">
+          <StatCard
+            label="서류 합격"
+            value={dashboard ? `${dashboard.passed}명` : '-'}
+            note="처리 완료"
+            icon={UsersRound}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
       </div>
       {isDashboardPending && (
         <p className="text-muted-foreground flex items-center gap-2 text-sm">

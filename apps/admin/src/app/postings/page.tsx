@@ -1,3 +1,11 @@
+import { Suspense } from 'react';
+
 import { PostingsView } from '@/views/postings';
 
-export default PostingsView;
+const PostingsPage = () => (
+  <Suspense>
+    <PostingsView />
+  </Suspense>
+);
+
+export default PostingsPage;
