@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 
+import { cn } from '../lib/utils';
 import { Card, CardContent } from './card';
 
 interface StatCardProps {
@@ -7,11 +8,12 @@ interface StatCardProps {
   value: string;
   note: string;
   icon: LucideIcon;
+  className?: string;
 }
 
-function StatCard({ label, value, note, icon: Icon }: StatCardProps) {
+function StatCard({ label, value, note, icon: Icon, className }: StatCardProps) {
   return (
-    <Card className="p-0">
+    <Card className={cn('p-0', className)}>
       <CardContent className="flex items-start justify-between p-5">
         <div>
           <p className="text-muted-foreground text-sm">{label}</p>
