@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button, Card, CardContent, Input } from '@chup/ui';
 import { CircleAlert, Inbox, Loader2, Plus, Search } from 'lucide-react';
@@ -9,16 +11,40 @@ import { StatusBadge } from '@/entities/application';
 import {
   type AdminJobPostingType,
   employmentTypeMeta,
+  type JobStatusType,
   useGetAdminJobs,
 } from '@/entities/dashboard';
 import { JobRegistrationForm } from '@/features/job-registration';
 import { JobStatusButton } from '@/features/job-status';
 
+const JOB_STATUS_FILTERS: { label: string; value?: JobStatusType }[] = [
+  { label: '전체' },
+  { label: '모집중', value: 'RECRUITING' },
+  { label: '마감', value: 'CLOSED' },
+];
+
 const PostingsView = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const statusParam = searchParams.get('status');
+  const status: JobStatusType | undefined =
+    statusParam === 'RECRUITING' || statusParam === 'CLOSED' ? statusParam : undefined;
+
   const [query, setQuery] = useState<string>('');
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [editingJob, setEditingJob] = useState<AdminJobPostingType | null>(null);
   const { data: jobs, isError, isPending } = useGetAdminJobs({ q: query });
+  const filteredJobs = useMemo(
+    () => (status ? jobs?.filter((job) => job.status === status) : jobs),
+    [jobs, status],
+  );
+
+  const handleStatusChange = (nextStatus?: JobStatusType) => {
+    const params = new URLSearchParams(searchParams);
+    if (nextStatus) params.set('status', nextStatus);
+    else params.delete('status');
+    router.replace(params.size > 0 ? `/postings?${params}` : '/postings', { scroll: false });
+  };
 
   const handleCreate = () => {
     setEditingJob(null);
@@ -56,6 +82,18 @@ const PostingsView = () => {
           onClose={handleFormClose}
         />
       )}
+      <div className="flex flex-wrap gap-2">
+        {JOB_STATUS_FILTERS.map((filter) => (
+          <Button
+            key={filter.label}
+            size="sm"
+            variant={status === filter.value ? 'default' : 'outline'}
+            onClick={() => handleStatusChange(filter.value)}
+          >
+            {filter.label}
+          </Button>
+        ))}
+      </div>
       <Card className="p-0">
         <CardContent className="p-0">
           <div className="flex items-center gap-3 border-b p-4">
@@ -97,7 +135,7 @@ const PostingsView = () => {
                     </td>
                   </tr>
                 )}
-                {!isPending && !isError && jobs?.length === 0 && (
+                {!isPending && !isError && filteredJobs?.length === 0 && (
                   <tr>
                     <td colSpan={5} className="text-muted-foreground px-5 py-10 text-center">
                       <Inbox className="mr-2 inline size-4" />
@@ -105,7 +143,7 @@ const PostingsView = () => {
                     </td>
                   </tr>
                 )}
-                {jobs?.map((job) => (
+                {filteredJobs?.map((job) => (
                   <tr key={job.id} className="border-t">
                     <td className="px-5 py-4">
                       <p className="font-semibold">{job.companyName}</p>
