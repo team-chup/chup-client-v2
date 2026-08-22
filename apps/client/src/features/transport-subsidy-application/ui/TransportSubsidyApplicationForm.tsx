@@ -20,6 +20,7 @@ import {
   type TransportSubsidyApplicationReqType,
   TransportSubsidyApplicationSchema,
 } from '../model/schema';
+import { toInterviewDateTime } from '../model/toInterviewDateTime';
 import { EVIDENCE_MAX_COUNT } from '../model/validateEvidenceFiles';
 
 interface TransportSubsidyApplicationFormProps {
@@ -64,7 +65,7 @@ const TransportSubsidyApplicationForm = ({
   };
 
   const handleSubmitApplication = (data: TransportSubsidyApplicationReqType) => {
-    postTransportSubsidy(data, {
+    postTransportSubsidy({ ...data, interviewAt: toInterviewDateTime(data.interviewAt) }, {
       onSuccess: () => {
         reset();
         toast.success('교통비 지원을 신청했습니다.');
@@ -98,17 +99,17 @@ const TransportSubsidyApplicationForm = ({
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="interview-at" className="text-sm font-medium">
-              면접 일시
+              면접 날짜
             </label>
             <Input
               id="interview-at"
-              type="datetime-local"
+              type="date"
               disabled={isDisabled}
               aria-invalid={Boolean(errors.interviewAt)}
               {...register('interviewAt')}
             />
             {errors.interviewAt && (
-              <p className="text-destructive text-sm">면접 일시를 입력해주세요.</p>
+              <p className="text-destructive text-sm">면접 날짜를 입력해주세요.</p>
             )}
           </div>
           <div className="flex flex-col gap-2">
