@@ -24,6 +24,7 @@
 ### Task 1: 테스트 실행 환경과 증빙 파일 검증
 
 **Files:**
+
 - Modify: package.json
 - Modify: pnpm-lock.yaml
 - Create: vitest.config.ts
@@ -32,6 +33,7 @@
 - Create: apps/client/src/features/transport-subsidy-application/model/schema.ts
 
 **Interfaces:**
+
 - Produces: pnpm test, validateEvidenceFiles(files: File[]): string | null, TransportSubsidyApplicationSchema, TransportSubsidyApplicationReqType
 - Consumes: 브라우저 File 객체, React Hook Form 폼 값
 
@@ -43,7 +45,7 @@ Expected: Missing script: test 실패.
 
 - [ ] **Step 2: 파일 정책을 고정하는 실패 테스트를 작성한다**
 
-~~~ts
+```ts
 import { describe, expect, it } from 'vitest';
 
 import { validateEvidenceFiles } from './validateEvidenceFiles';
@@ -74,7 +76,7 @@ describe('validateEvidenceFiles', () => {
     );
   });
 });
-~~~
+```
 
 - [ ] **Step 3: 모듈 부재 실패를 확인한다**
 
@@ -86,7 +88,7 @@ Expected: FAIL — validateEvidenceFiles 모듈을 찾을 수 없음.
 
 루트 package.json에 test: "vitest run"과 vitest 개발 의존성을 추가하고 pnpm add -Dw vitest로 lockfile을 갱신한다. vitest.config.ts는 apps/**/*.test.ts만 포함한다.
 
-~~~ts
+```ts
 export const EVIDENCE_MAX_COUNT = 5;
 export const EVIDENCE_MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -102,7 +104,7 @@ export const validateEvidenceFiles = (files: File[]): string | null => {
 
   return null;
 };
-~~~
+```
 
 schema.ts는 companyName, interviewAt, files를 받고 superRefine에서 위 오류를 files 경로에 등록한다.
 
@@ -114,14 +116,15 @@ Expected: PASS.
 
 - [ ] **Step 6: 커밋한다**
 
-~~~bash
+```bash
 git add package.json pnpm-lock.yaml vitest.config.ts apps/client/src/features/transport-subsidy-application/model
 git commit -m "add(transport-subsidy): 학생 증빙 파일 검증 추가"
-~~~
+```
 
 ### Task 2: 학생 교통비 지원 엔티티와 신청 화면
 
 **Files:**
+
 - Create: apps/client/src/entities/transport-subsidy/api/endpoints.ts
 - Create: apps/client/src/entities/transport-subsidy/model/types.ts
 - Create: apps/client/src/entities/transport-subsidy/model/queryKeys.ts
@@ -137,18 +140,19 @@ git commit -m "add(transport-subsidy): 학생 증빙 파일 검증 추가"
 - Modify: apps/client/src/widgets/app-navigation/model/navigation.ts
 
 **Interfaces:**
+
 - Produces: TransportSubsidyType, TransportSubsidyStatusType, useGetTransportSubsidies, usePostTransportSubsidy, TransportSubsidyStatusBadge, /transport-subsidies
 - Consumes: Task 1 schema, ApiResponseType, get, post, useGetMe, TanStack Query
 
 - [ ] **Step 1: 화면이 소비할 공개 API import를 먼저 작성한다**
 
-~~~ts
+```ts
 import {
   TransportSubsidyStatusBadge,
   useGetTransportSubsidies,
   usePostTransportSubsidy,
 } from '@/entities/transport-subsidy';
-~~~
+```
 
 - [ ] **Step 2: 엔티티 부재로 타입 검사가 실패하는지 확인한다**
 
@@ -158,7 +162,7 @@ Expected: FAIL — @/entities/transport-subsidy 모듈을 찾을 수 없음.
 
 - [ ] **Step 3: Swagger 타입·URL·Query hooks를 구현한다**
 
-~~~ts
+```ts
 export type TransportSubsidyStatusType = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export interface EvidenceFileType {
@@ -185,7 +189,7 @@ export const transportSubsidyUrl = {
     '&interviewAt=' +
     encodeURIComponent(interviewAt),
 } as const;
-~~~
+```
 
 GET 훅은 목록 key를 사용한다. POST 훅은 files 각각을 FormData의 files 필드로 append하고, 성공 시 목록 key를 invalidate한다. 상태 배지는 대기·승인·거절을 기존 Badge 변형으로 표시한다.
 
@@ -193,12 +197,11 @@ GET 훅은 목록 key를 사용한다. POST 훅은 files 각각을 FormData의 f
 
 React Hook Form과 Task 1 schema를 사용해 회사명 Input, datetime-local Input, multiple 이미지/PDF input, 선택 파일명·삭제 버튼·n/5 카운터를 구현한다. 다음 조건으로 폼을 비활성화하고 안내한다.
 
-~~~tsx
-const approvedCount =
-  applications?.filter(({ status }) => status === 'APPROVED').length ?? 0;
+```tsx
+const approvedCount = applications?.filter(({ status }) => status === 'APPROVED').length ?? 0;
 const isEligible = user?.studentId?.startsWith('3') ?? false;
 const isLimitReached = approvedCount >= 2;
-~~~
+```
 
 같은 페이지에서 내역의 회사명, 면접 일시, 신청 일시, 상태 배지, 증빙 파일명을 Card로 표시한다. 로딩·오류·빈 상태는 ApplicationsView 패턴을 따른다. navigation.ts에는 BusFront 아이콘과 /transport-subsidies 항목을 추가한다.
 
@@ -210,14 +213,15 @@ Expected: PASS.
 
 - [ ] **Step 6: 커밋한다**
 
-~~~bash
+```bash
 git add apps/client/src/app/transport-subsidies apps/client/src/entities/transport-subsidy apps/client/src/features/transport-subsidy-application apps/client/src/views/transport-subsidies apps/client/src/widgets/app-navigation/model/navigation.ts
 git commit -m "add(transport-subsidy): 학생 신청 및 내역 화면 추가"
-~~~
+```
 
 ### Task 3: 관리자 교통비 지원 엔티티
 
 **Files:**
+
 - Create: apps/admin/src/entities/transport-subsidy/api/endpoints.ts
 - Create: apps/admin/src/entities/transport-subsidy/model/types.ts
 - Create: apps/admin/src/entities/transport-subsidy/model/queryKeys.ts
@@ -228,19 +232,20 @@ git commit -m "add(transport-subsidy): 학생 신청 및 내역 화면 추가"
 - Create: apps/admin/src/entities/transport-subsidy/index.ts
 
 **Interfaces:**
+
 - Produces: TransportSubsidyStudentType, AdminTransportSubsidyType, useGetTransportSubsidyStudents, useGetTransportSubsidies, usePatchTransportSubsidyResult
 - Consumes: ApiResponseType, get, patch, API_BASE_URL, TanStack Query
 
 - [ ] **Step 1: StudentsView 공개 API import를 먼저 작성한다**
 
-~~~ts
+```ts
 import {
   TransportSubsidyStatusBadge,
   transportSubsidyUrl,
   useGetTransportSubsidies,
   useGetTransportSubsidyStudents,
 } from '@/entities/transport-subsidy';
-~~~
+```
 
 - [ ] **Step 2: 엔티티 부재로 타입 검사가 실패하는지 확인한다**
 
@@ -250,7 +255,7 @@ Expected: FAIL — @/entities/transport-subsidy 모듈을 찾을 수 없음.
 
 - [ ] **Step 3: Swagger 타입·URL·Query hooks를 구현한다**
 
-~~~ts
+```ts
 export interface TransportSubsidyStudentType {
   userId: number;
   name: string;
@@ -280,7 +285,7 @@ export const transportSubsidyUrl = {
   getEvidence: (applicationId: number) =>
     API_BASE_URL + '/api/admin/transport-subsidies/' + applicationId + '/evidence',
 } as const;
-~~~
+```
 
 결과 mutation 입력은 applicationId와 status: 'APPROVED' | 'REJECTED'다. 성공 시 학생 요약과 신청 목록 query key를 모두 invalidate한다.
 
@@ -292,14 +297,15 @@ Expected: PASS.
 
 - [ ] **Step 5: 커밋한다**
 
-~~~bash
+```bash
 git add apps/admin/src/entities/transport-subsidy
 git commit -m "add(transport-subsidy): 관리자 조회 및 처리 API 추가"
-~~~
+```
 
 ### Task 4: 관리자 승인·거절 액션과 학생 관리 화면
 
 **Files:**
+
 - Create: apps/admin/src/features/transport-subsidy-result/ui/TransportSubsidyResultButtons.tsx
 - Create: apps/admin/src/features/transport-subsidy-result/index.ts
 - Create: apps/admin/src/views/students/ui/StudentsView.tsx
@@ -308,18 +314,19 @@ git commit -m "add(transport-subsidy): 관리자 조회 및 처리 API 추가"
 - Modify: apps/admin/src/widgets/app-navigation/model/navigation.ts
 
 **Interfaces:**
+
 - Consumes: Task 3의 엔티티 hooks·다운로드 URL·타입, usePatchTransportSubsidyResult
 - Produces: /students 학생 관리 페이지와 승인·거절 액션
 
 - [ ] **Step 1: 학생 선택 및 처리 조건을 먼저 작성한다**
 
-~~~tsx
+```tsx
 const [selectedStudentId, setSelectedStudentId] = useState<number>();
 const { data: students } = useGetTransportSubsidyStudents();
 const { data: applications } = useGetTransportSubsidies(selectedStudentId);
 const selectedStudent = students?.find(({ userId }) => userId === selectedStudentId);
 const isPending = application.status === 'PENDING';
-~~~
+```
 
 - [ ] **Step 2: Task 3 이전에 엔티티 import가 실패하는지 확인한다**
 
@@ -341,17 +348,19 @@ Expected: PASS.
 
 - [ ] **Step 5: 커밋한다**
 
-~~~bash
+```bash
 git add apps/admin/src/app/students apps/admin/src/entities/transport-subsidy apps/admin/src/features/transport-subsidy-result apps/admin/src/views/students apps/admin/src/widgets/app-navigation/model/navigation.ts
 git commit -m "add(transport-subsidy): 학생 관리 및 결과 처리 화면 추가"
-~~~
+```
 
 ### Task 5: 전체 품질 검증
 
 **Files:**
+
 - Modify: 검증 과정에서 문제가 발견된 교통비 지원 관련 파일만
 
 **Interfaces:**
+
 - Consumes: Tasks 1–4의 전체 구현
 - Produces: FSD·lint·타입·프로덕션 빌드를 통과한 기능 브랜치
 
@@ -381,11 +390,11 @@ Expected: client, admin, @chup/core, @chup/ui 빌드 PASS.
 
 - [ ] **Step 5: 검증으로 수정한 파일만 커밋한다**
 
-~~~bash
+```bash
 git status --short
 git add apps/client/src/entities/transport-subsidy apps/client/src/features/transport-subsidy-application apps/client/src/views/transport-subsidies apps/admin/src/entities/transport-subsidy apps/admin/src/features/transport-subsidy-result apps/admin/src/views/students
 git commit -m "fix(transport-subsidy): 검증 오류 정리"
-~~~
+```
 
 ## Self-review
 

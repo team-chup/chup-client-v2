@@ -34,14 +34,14 @@
 
 ## API 계약
 
-| 사용자 | 작업 | API |
-| --- | --- | --- |
-| 학생 | 내 신청 목록 | `GET /api/transport-subsidies` |
-| 학생 | 신청 | `POST /api/transport-subsidies?companyName=&interviewAt=` + multipart `files` |
-| 관리자 | 3학년 학생 요약 | `GET /api/admin/transport-subsidies/students` |
-| 관리자 | 전체/학생별 신청 목록 | `GET /api/admin/transport-subsidies?userId=` |
-| 관리자 | 증빙 ZIP 다운로드 | `GET /api/admin/transport-subsidies/{applicationId}/evidence` |
-| 관리자 | 승인/거절 | `PATCH /api/admin/transport-subsidies/{applicationId}/result` body `{ status }` |
+| 사용자 | 작업                  | API                                                                             |
+| ------ | --------------------- | ------------------------------------------------------------------------------- |
+| 학생   | 내 신청 목록          | `GET /api/transport-subsidies`                                                  |
+| 학생   | 신청                  | `POST /api/transport-subsidies?companyName=&interviewAt=` + multipart `files`   |
+| 관리자 | 3학년 학생 요약       | `GET /api/admin/transport-subsidies/students`                                   |
+| 관리자 | 전체/학생별 신청 목록 | `GET /api/admin/transport-subsidies?userId=`                                    |
+| 관리자 | 증빙 ZIP 다운로드     | `GET /api/admin/transport-subsidies/{applicationId}/evidence`                   |
+| 관리자 | 승인/거절             | `PATCH /api/admin/transport-subsidies/{applicationId}/result` body `{ status }` |
 
 상태는 `PENDING | APPROVED | REJECTED`다. 승인 API의 `409`(이미 처리됨 또는 승인 한도 초과)은 사용자에게 서버 메시지를 우선 표시한다.
 
