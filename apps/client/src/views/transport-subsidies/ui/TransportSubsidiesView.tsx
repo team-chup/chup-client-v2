@@ -14,11 +14,16 @@ const formatDateTime = (value: string) => new Date(value).toLocaleString('ko-KR'
 
 const TransportSubsidiesView = () => {
   const { data: user } = useGetMe();
-  const { data: applications, isPending, isError } = useGetTransportSubsidies();
+  const {
+    data: applications,
+    isPending,
+    isError,
+    isSuccess: isApplicationsSuccess,
+  } = useGetTransportSubsidies();
 
   const approvedCount = applications?.filter(({ status }) => status === 'APPROVED').length ?? 0;
   const isEligible = user?.studentId?.startsWith('3') ?? false;
-  const isLimitReached = approvedCount >= 2;
+  const isLimitReached = isApplicationsSuccess && approvedCount >= 2;
 
   return (
     <div className="flex flex-col gap-6">
@@ -29,7 +34,11 @@ const TransportSubsidiesView = () => {
           면접 증빙 서류를 제출하면 교통비 지원을 받을 수 있어요.
         </p>
       </div>
-      <TransportSubsidyApplicationForm isEligible={isEligible} isLimitReached={isLimitReached} />
+      <TransportSubsidyApplicationForm
+        isApplicationsReady={isApplicationsSuccess}
+        isEligible={isEligible}
+        isLimitReached={isLimitReached}
+      />
       <Card>
         <CardHeader>
           <CardTitle>신청 내역</CardTitle>

@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import {
   Button,
   Card,
@@ -14,7 +12,7 @@ import {
 } from '@chup/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Paperclip, Send, X } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { usePostTransportSubsidy } from '@/entities/transport-subsidy';
 
@@ -25,11 +23,13 @@ import {
 import { EVIDENCE_MAX_COUNT } from '../model/validateEvidenceFiles';
 
 interface TransportSubsidyApplicationFormProps {
+  isApplicationsReady: boolean;
   isEligible: boolean;
   isLimitReached: boolean;
 }
 
 const TransportSubsidyApplicationForm = ({
+  isApplicationsReady,
   isEligible,
   isLimitReached,
 }: TransportSubsidyApplicationFormProps) => {
@@ -39,6 +39,7 @@ const TransportSubsidyApplicationForm = ({
     handleSubmit,
     getValues,
     setValue,
+    control,
     formState: { errors },
     reset,
   } = useForm<TransportSubsidyApplicationReqType>({
@@ -46,21 +47,19 @@ const TransportSubsidyApplicationForm = ({
     defaultValues: { companyName: '', interviewAt: '', files: [] },
   });
 
-  const [files, setFiles] = useState<File[]>([]);
-  const isDisabled = isPending || !isEligible || isLimitReached;
+  const files = useWatch({ control, name: 'files' });
+  const isDisabled = isPending || !isApplicationsReady || !isEligible || isLimitReached;
 
   const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files ?? []);
     event.target.value = '';
 
     const nextFiles = [...getValues('files'), ...selectedFiles];
-    setFiles(nextFiles);
     setValue('files', nextFiles, { shouldValidate: true });
   };
 
   const handleFileRemove = (targetIndex: number) => {
     const nextFiles = files.filter((_, index) => index !== targetIndex);
-    setFiles(nextFiles);
     setValue('files', nextFiles, { shouldValidate: true });
   };
 
@@ -68,7 +67,6 @@ const TransportSubsidyApplicationForm = ({
     postTransportSubsidy(data, {
       onSuccess: () => {
         reset();
-        setFiles([]);
         toast.success('교통비 지원을 신청했습니다.');
       },
       onError: () => toast.error('교통비 지원 신청에 실패했습니다. 다시 시도해주세요.'),

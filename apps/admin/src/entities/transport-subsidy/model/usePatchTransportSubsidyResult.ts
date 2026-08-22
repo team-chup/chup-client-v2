@@ -19,13 +19,14 @@ export const usePatchTransportSubsidyResult = () => {
 
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: transportSubsidyQueryKeys.getTransportSubsidyStudents(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: transportSubsidyQueryKeys.getTransportSubsidies(),
-      });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: transportSubsidyQueryKeys.getTransportSubsidyStudents(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: transportSubsidyQueryKeys.getTransportSubsidies(),
+        }),
+      ]),
   });
 };
