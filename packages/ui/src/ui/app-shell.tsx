@@ -32,7 +32,10 @@ function AppSidebar({ className, mobile = false, ...props }: AppSidebarProps) {
 function AppMain({ className, ...props }: React.ComponentProps<'main'>) {
   return (
     <main
-      className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto p-4 md:p-7 lg:p-9', className)}
+      className={cn(
+        'min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-7 lg:p-9',
+        className,
+      )}
       {...props}
     />
   );
