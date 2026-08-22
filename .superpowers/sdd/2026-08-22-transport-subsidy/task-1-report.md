@@ -44,3 +44,16 @@
 - 허용 형식은 `image/*` 및 `application/pdf`로 제한했습니다.
 - 변경 범위를 명세에 지정된 파일로 제한했습니다.
 - Vitest config의 Vite ESM 경고는 테스트 성공을 막지 않으며, 기존 루트가 CommonJS라 발생합니다.
+
+## 리뷰 보완
+
+- `validateEvidenceFiles.test.ts`에 정확히 5개 및 정확히 10MB 파일이 허용되는 경계 테스트를 추가했습니다.
+- `TransportSubsidyApplicationSchema.safeParse` 테스트를 추가해 검증 오류가 `['files']` 경로에 등록되는지 확인했습니다.
+- 테스트 설명을 “다섯 개보다 많은”으로 수정했습니다.
+
+### 보완 검증
+
+- 명령: `pnpm exec vitest run apps/client/src/features/transport-subsidy-application/model/validateEvidenceFiles.test.ts`
+  - 출력: `Test Files 1 passed`, `Tests 6 passed`
+- 명령: `pnpm test`
+  - 출력: `Test Files 1 passed`, `Tests 6 passed`
