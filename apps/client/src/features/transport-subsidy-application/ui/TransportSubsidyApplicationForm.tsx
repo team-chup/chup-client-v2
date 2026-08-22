@@ -163,7 +163,7 @@ const TransportSubsidyApplicationForm = ({
                 accept="image/*,application/pdf"
                 multiple
                 disabled={isDisabled || isFileLimitReached}
-                className="sr-only"
+                className="sr-only w-px"
                 onChange={handleFilesChange}
               />
               <Plus className="size-4" />

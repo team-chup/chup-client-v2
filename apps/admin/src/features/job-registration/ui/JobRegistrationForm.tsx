@@ -382,7 +382,7 @@ const JobRegistrationForm = ({ job, onClose }: JobRegistrationFormProps) => {
                 multiple
                 accept="application/pdf,.hwp,.hwpx,image/*"
                 disabled={attachmentCount === 5}
-                className="sr-only"
+                className="sr-only w-px"
                 onChange={handleAttachmentChange}
               />
               <Plus className="size-4" />
