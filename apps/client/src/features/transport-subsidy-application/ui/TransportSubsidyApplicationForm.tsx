@@ -1,17 +1,19 @@
 'use client';
 
 import {
+  Badge,
   Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  cn,
   Input,
   toast,
 } from '@chup/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Paperclip, Send, X } from 'lucide-react';
+import { FileText, Plus, Send, X } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { usePostTransportSubsidy } from '@/entities/transport-subsidy';
@@ -49,12 +51,13 @@ const TransportSubsidyApplicationForm = ({
 
   const files = useWatch({ control, name: 'files' });
   const isDisabled = isPending || !isApplicationsReady || !isEligible || isLimitReached;
+  const isFileLimitReached = files.length === EVIDENCE_MAX_COUNT;
 
   const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files ?? []);
     event.target.value = '';
 
-    const nextFiles = [...getValues('files'), ...selectedFiles];
+    const nextFiles = [...getValues('files'), ...selectedFiles].slice(0, EVIDENCE_MAX_COUNT);
     setValue('files', nextFiles, { shouldValidate: true });
   };
 
@@ -111,38 +114,31 @@ const TransportSubsidyApplicationForm = ({
               <p className="text-destructive text-sm">면접 일시를 입력해주세요.</p>
             )}
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label htmlFor="evidence-files" className="text-sm font-medium">
-                증빙 서류
-              </label>
-              <span className="text-muted-foreground text-sm">
+              <div>
+                <p className="font-medium">증빙 서류</p>
+                <p className="text-muted-foreground mt-1 text-sm">이미지 또는 PDF, 파일당 최대 10MB</p>
+              </div>
+              <Badge variant="secondary">
                 {files.length}/{EVIDENCE_MAX_COUNT}
-              </span>
+              </Badge>
             </div>
-            <Input
-              id="evidence-files"
-              type="file"
-              accept="image/*,application/pdf"
-              multiple
-              disabled={isDisabled}
-              onChange={handleFilesChange}
-            />
-            <p className="text-muted-foreground text-sm">이미지 또는 PDF, 파일당 최대 10MB</p>
-            {errors.files && <p className="text-destructive text-sm">{errors.files.message}</p>}
             {files.length > 0 && (
-              <ul className="flex flex-col gap-2">
+              <ul className="space-y-2">
                 {files.map((file, index) => (
                   <li
                     key={`${file.name}-${file.lastModified}-${index}`}
-                    className="flex items-center gap-2 rounded-lg border p-2"
+                    className="flex min-w-0 items-center gap-3 rounded-xl border p-3"
                   >
-                    <Paperclip className="text-muted-foreground size-4 shrink-0" />
-                    <span className="min-w-0 flex-1 truncate text-sm">{file.name}</span>
+                    <div className="bg-primary/10 text-primary shrink-0 rounded-lg p-2">
+                      <FileText className="size-4" />
+                    </div>
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{file.name}</span>
                     <Button
                       type="button"
                       variant="ghost"
-                      size="icon-xs"
+                      size="icon"
                       disabled={isDisabled}
                       aria-label={`${file.name} 삭제`}
                       onClick={() => handleFileRemove(index)}
@@ -153,6 +149,27 @@ const TransportSubsidyApplicationForm = ({
                 ))}
               </ul>
             )}
+            <label
+              className={cn(
+                'border-input inline-flex h-8 w-fit items-center gap-1.5 rounded-lg border px-2.5 text-sm font-medium',
+                isDisabled || isFileLimitReached
+                  ? 'cursor-not-allowed opacity-50'
+                  : 'hover:bg-muted cursor-pointer',
+              )}
+            >
+              <Input
+                id="evidence-files"
+                type="file"
+                accept="image/*,application/pdf"
+                multiple
+                disabled={isDisabled || isFileLimitReached}
+                className="sr-only"
+                onChange={handleFilesChange}
+              />
+              <Plus className="size-4" />
+              파일 선택
+            </label>
+            {errors.files && <p className="text-destructive text-sm">{errors.files.message}</p>}
           </div>
           {!isEligible && (
             <p className="text-destructive text-sm">
