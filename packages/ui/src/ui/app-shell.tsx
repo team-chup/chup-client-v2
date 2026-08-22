@@ -33,7 +33,7 @@ function AppMain({ className, ...props }: React.ComponentProps<'main'>) {
   return (
     <main
       className={cn(
-        'min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto [contain:paint] p-4 md:p-7 lg:p-9',
+        'min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4 [contain:paint] md:p-7 lg:p-9',
         className,
       )}
       {...props}

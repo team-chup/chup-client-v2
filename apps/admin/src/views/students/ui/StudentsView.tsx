@@ -114,14 +114,20 @@ const StudentsView = () => {
       </Card>
       <Card className="pb-1">
         <CardHeader>
-          <CardTitle>{selectedStudent ? `${selectedStudent.name} 신청 내역` : '신청 내역'}</CardTitle>
+          <CardTitle>
+            {selectedStudent ? `${selectedStudent.name} 신청 내역` : '신청 내역'}
+          </CardTitle>
           <CardDescription>
-            {selectedStudent ? '교통비 지원 신청의 증빙과 처리 결과를 확인하세요.' : '학생을 선택해주세요.'}
+            {selectedStudent
+              ? '교통비 지원 신청의 증빙과 처리 결과를 확인하세요.'
+              : '학생을 선택해주세요.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           {!selectedStudent ? (
-            <div className="text-muted-foreground py-10 text-center text-sm">학생을 선택해주세요.</div>
+            <div className="text-muted-foreground py-10 text-center text-sm">
+              학생을 선택해주세요.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[960px] text-sm">
@@ -183,7 +189,9 @@ const StudentsView = () => {
                           variant="ghost"
                           size="icon"
                           nativeButton={false}
-                          render={<a href={transportSubsidyUrl.getEvidence(application.id)} download />}
+                          render={
+                            <a href={transportSubsidyUrl.getEvidence(application.id)} download />
+                          }
                           aria-label="증빙 ZIP 다운로드"
                         >
                           <FileArchive />

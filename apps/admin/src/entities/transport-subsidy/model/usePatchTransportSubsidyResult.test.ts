@@ -24,7 +24,9 @@ describe('usePatchTransportSubsidyResult', () => {
     const applicationsInvalidated = new Promise<void>((resolve) => {
       resolveApplications = resolve;
     });
-    invalidateQueries.mockReturnValueOnce(studentsInvalidated).mockReturnValueOnce(applicationsInvalidated);
+    invalidateQueries
+      .mockReturnValueOnce(studentsInvalidated)
+      .mockReturnValueOnce(applicationsInvalidated);
     useMutation.mockImplementation((options) => {
       mutationOptions = options as { onSuccess?: () => Promise<unknown> };
       return {};

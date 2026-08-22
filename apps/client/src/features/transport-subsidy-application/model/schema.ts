@@ -13,6 +13,4 @@ export const TransportSubsidyApplicationSchema = z
     if (message) ctx.addIssue({ code: 'custom', path: ['files'], message });
   });
 
-export type TransportSubsidyApplicationReqType = z.infer<
-  typeof TransportSubsidyApplicationSchema
->;
+export type TransportSubsidyApplicationReqType = z.infer<typeof TransportSubsidyApplicationSchema>;

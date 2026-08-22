@@ -118,7 +118,9 @@ const TransportSubsidyApplicationForm = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">증빙 서류</p>
-                <p className="text-muted-foreground mt-1 text-sm">이미지 또는 PDF, 파일당 최대 10MB</p>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  이미지 또는 PDF, 파일당 최대 10MB
+                </p>
               </div>
               <Badge variant="secondary">
                 {files.length}/{EVIDENCE_MAX_COUNT}
