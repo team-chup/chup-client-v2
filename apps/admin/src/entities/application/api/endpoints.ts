@@ -13,6 +13,7 @@ export const applicantUrl = {
     return queryString ? `/api/admin/applicants?${queryString}` : '/api/admin/applicants';
   },
   patchApplicantResult: (applicationId: number) => `/api/admin/applicants/${applicationId}/result`,
+  postManualApplicant: () => '/api/admin/applicants',
   getApplicantResume: (applicationId: number) =>
     `${API_BASE_URL}/api/admin/applicants/${applicationId}/resume`,
   // 쿼리 파라미터명은 companyId이지만 실제로는 jobPosting id를 받는 백엔드 계약을 그대로 따름
