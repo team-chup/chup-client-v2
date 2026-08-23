@@ -130,7 +130,12 @@ const ManualApplicantRegistrationForm = ({ onClose }: ManualApplicantRegistratio
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full" aria-invalid={!!errors.status}>
-                    <SelectValue placeholder="현재 상태" />
+                    <SelectValue placeholder="현재 상태">
+                      {(value: ApplicationStatusType | null) =>
+                        STATUS_OPTIONS.find((option) => option.value === value)?.label ??
+                        '현재 상태'
+                      }
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent side="bottom" align="start" alignItemWithTrigger={false}>
                     {STATUS_OPTIONS.map((option) => (
