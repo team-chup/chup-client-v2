@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import {
   Button,
   Card,
@@ -7,6 +9,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
   Input,
   Select,
   SelectContent,
@@ -19,6 +27,8 @@ import { X } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 
 import type { ApplicationStatusType } from '@/entities/application';
+import { type StudentSearchResultType, useGetSearchStudents } from '@/entities/user';
+import { useDebounce } from '@/shared/lib/useDebounce';
 
 import {
   type ManualApplicantRegistrationReqType,
@@ -38,6 +48,11 @@ const STATUS_OPTIONS: { label: string; value: ApplicationStatusType }[] = [
 ];
 
 const ManualApplicantRegistrationForm = ({ onClose }: ManualApplicantRegistrationFormProps) => {
+  const [studentQuery, setStudentQuery] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState<StudentSearchResultType | null>(null);
+  const debouncedStudentQuery = useDebounce(studentQuery, 300);
+  const { data: students = [] } = useGetSearchStudents(debouncedStudentQuery);
+
   const { mutate: postManualApplicant, isPending } = usePostManualApplicant();
   const {
     control,
@@ -83,12 +98,43 @@ const ManualApplicantRegistrationForm = ({ onClose }: ManualApplicantRegistratio
               control={control}
               name="userId"
               render={({ field }) => (
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder="학생 ID"
-                  aria-invalid={!!errors.userId}
-                />
+                <Combobox
+                  items={students}
+                  inputValue={studentQuery}
+                  onInputValueChange={setStudentQuery}
+                  value={selectedStudent}
+                  onValueChange={(student: StudentSearchResultType | null) => {
+                    setSelectedStudent(student);
+                    field.onChange(student ? String(student.id) : '');
+                  }}
+                  itemToStringLabel={(student: StudentSearchResultType) =>
+                    `${student.name} (${student.studentId})`
+                  }
+                  isItemEqualToValue={(a: StudentSearchResultType, b: StudentSearchResultType) =>
+                    a.id === b.id
+                  }
+                  filter={null}
+                >
+                  <ComboboxInput
+                    className="w-full"
+                    placeholder="학생 이름으로 검색"
+                    aria-invalid={!!errors.userId}
+                  />
+                  <ComboboxContent>
+                    <ComboboxEmpty>
+                      {debouncedStudentQuery.trim()
+                        ? '검색 결과가 없습니다'
+                        : '학생 이름을 입력하세요'}
+                    </ComboboxEmpty>
+                    <ComboboxList>
+                      {(student: StudentSearchResultType) => (
+                        <ComboboxItem key={student.id} value={student}>
+                          {student.name} ({student.studentId})
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
               )}
             />
             {errors.userId && (
