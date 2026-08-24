@@ -1,6 +1,14 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, StatCard } from '@chup/ui';
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  StatCard,
+} from '@chup/ui';
 import { CircleAlert, Clock3, Inbox, Loader2, Send, UserRoundCheck } from 'lucide-react';
 
 import { StatusBadge, useGetApplications } from '@/entities/application';
@@ -70,7 +78,13 @@ const ApplicationsView = () => {
             >
               <div>
                 <p className="font-semibold">
-                  {application.companyName} · {application.positionName}
+                  {application.companyName}
+                  {application.positionName ? ` · ${application.positionName}` : ''}
+                  {application.applicationSource === 'EXTERNAL' && (
+                    <Badge variant="secondary" className="ml-2">
+                      {application.sourcePlatform}
+                    </Badge>
+                  )}
                 </p>
                 <p className="text-muted-foreground mt-1 text-sm">
                   {formatAppliedAt(application.appliedAt)} 지원

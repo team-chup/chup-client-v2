@@ -7,6 +7,7 @@ export * from './ui/button';
 export * from './ui/calendar';
 export * from './ui/card';
 export * from './ui/checkbox';
+export * from './ui/combobox';
 export * from './ui/dialog';
 export * from './ui/dropdown-menu';
 export * from './ui/input';
