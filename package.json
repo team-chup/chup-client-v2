@@ -11,15 +11,13 @@
     "lint:fix": "turbo run lint:fix",
     "check-types": "turbo run check-types",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "vitest run"
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@feature-sliced/steiger-plugin": "^0.7.0",
     "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "steiger": "^0.6.0",
-    "turbo": "^2.5.0",
-    "vitest": "^4.1.11"
+    "turbo": "^2.5.0"
   }
 }
