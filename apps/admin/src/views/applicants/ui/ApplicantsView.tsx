@@ -4,8 +4,8 @@ import { useMemo, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@chup/ui';
-import { CircleAlert, Download, FileArchive, Inbox, Loader2 } from 'lucide-react';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@chup/ui';
+import { CircleAlert, Download, FileArchive, Inbox, Loader2, Plus } from 'lucide-react';
 
 import {
   applicantUrl,
@@ -15,26 +15,37 @@ import {
 } from '@/entities/application';
 import { useGetAdminJobs } from '@/entities/dashboard';
 import { ApplicantResultButtons } from '@/features/applicant-result';
+import { ManualApplicantRegistrationForm } from '@/features/manual-applicant-registration';
 
 import { formatAppliedAt } from '../lib/formatAppliedAt';
+
+const APPLICATION_STATUS_VALUES: ApplicationStatusType[] = [
+  'APPLIED',
+  'INTERVIEW_SCHEDULED',
+  'PASSED',
+  'FAILED',
+];
 
 const APPLICATION_STATUS_FILTERS: { label: string; value?: ApplicationStatusType }[] = [
   { label: '전체' },
   { label: '결과 대기', value: 'APPLIED' },
-  { label: '서류 합격', value: 'PASSED' },
-  { label: '서류 불합격', value: 'FAILED' },
+  { label: '면접 예정', value: 'INTERVIEW_SCHEDULED' },
+  { label: '최종 합격', value: 'PASSED' },
+  { label: '면접 탈락', value: 'FAILED' },
 ];
 
 const ApplicantsView = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const statusParam = searchParams.get('status');
-  const status: ApplicationStatusType | undefined =
-    statusParam === 'APPLIED' || statusParam === 'PASSED' || statusParam === 'FAILED'
-      ? statusParam
-      : undefined;
+  const status: ApplicationStatusType | undefined = APPLICATION_STATUS_VALUES.includes(
+    statusParam as ApplicationStatusType,
+  )
+    ? (statusParam as ApplicationStatusType)
+    : undefined;
 
   const [jobPostingId, setJobPostingId] = useState<number>();
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const {
     data: applicants,
     isPending,
@@ -64,14 +75,21 @@ const ApplicantsView = () => {
             회사별 지원 서류를 확인하고 전형 결과를 처리할 수 있어요.
           </p>
         </div>
-        <Button
-          nativeButton={false}
-          render={<a href={applicantUrl.getApplicantsZip(jobPostingId)} download />}
-        >
-          <FileArchive />
-          ZIP 다운로드
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsFormOpen(true)}>
+            <Plus />
+            외부 지원 수동 등록
+          </Button>
+          <Button
+            nativeButton={false}
+            render={<a href={applicantUrl.getApplicantsZip(jobPostingId)} download />}
+          >
+            <FileArchive />
+            ZIP 다운로드
+          </Button>
+        </div>
       </div>
+      {isFormOpen && <ManualApplicantRegistrationForm onClose={() => setIsFormOpen(false)} />}
       <div className="flex flex-wrap gap-2">
         <Button
           size="sm"
@@ -168,8 +186,15 @@ const ApplicantsView = () => {
                       </div>
                     </td>
                     <td className="px-5 py-4">{applicant.phoneNumber ?? '-'}</td>
-                    <td className="px-5 py-4 font-medium">{applicant.companyName}</td>
-                    <td className="px-5 py-4">{applicant.positionName}</td>
+                    <td className="px-5 py-4 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        {applicant.companyName}
+                        {applicant.isExternal && (
+                          <Badge variant="secondary">{applicant.sourcePlatform}</Badge>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">{applicant.positionName ?? '-'}</td>
                     <td className="text-muted-foreground px-5 py-4">
                       {formatAppliedAt(applicant.appliedAt)}
                     </td>
@@ -178,17 +203,19 @@ const ApplicantsView = () => {
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          nativeButton={false}
-                          render={
-                            <a href={applicantUrl.getApplicantResume(applicant.id)} download />
-                          }
-                          aria-label="이력서 다운로드"
-                        >
-                          <Download />
-                        </Button>
+                        {!applicant.isExternal && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            nativeButton={false}
+                            render={
+                              <a href={applicantUrl.getApplicantResume(applicant.id)} download />
+                            }
+                            aria-label="이력서 다운로드"
+                          >
+                            <Download />
+                          </Button>
+                        )}
                         <ApplicantResultButtons application={applicant} />
                       </div>
                     </td>

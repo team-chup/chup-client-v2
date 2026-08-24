@@ -1,6 +1,14 @@
 'use client';
 
-import { Button, toast } from '@chup/ui';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  toast,
+} from '@chup/ui';
+import { ChevronDown } from 'lucide-react';
 
 import type { ApplicationStatusType, ApplicationType } from '@/entities/application';
 import { usePatchApplicantResult } from '@/entities/application';
@@ -8,6 +16,12 @@ import { usePatchApplicantResult } from '@/entities/application';
 interface ApplicantResultButtonsProps {
   application: ApplicationType;
 }
+
+const STATUS_OPTIONS: { label: string; value: ApplicationStatusType }[] = [
+  { label: '면접 예정', value: 'INTERVIEW_SCHEDULED' },
+  { label: '최종 합격', value: 'PASSED' },
+  { label: '면접 탈락', value: 'FAILED' },
+];
 
 const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) => {
   const { isPending, mutate: patchApplicantResult } = usePatchApplicantResult();
@@ -28,19 +42,23 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
   };
 
   return (
-    <div className="flex gap-1">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={isPending}
-        onClick={() => handleUpdate('PASSED')}
-      >
-        합격
-      </Button>
-      <Button variant="ghost" size="sm" disabled={isPending} onClick={() => handleUpdate('FAILED')}>
-        불합격
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="outline" size="sm" disabled={isPending} />}>
+        상태 변경
+        <ChevronDown />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {STATUS_OPTIONS.map((option) => (
+          <DropdownMenuItem
+            key={option.value}
+            disabled={application.status === option.value}
+            onClick={() => handleUpdate(option.value)}
+          >
+            {option.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
