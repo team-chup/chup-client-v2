@@ -1,7 +1,9 @@
 import localFont from 'next/font/local';
 
+import { GoogleAnalytics } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 
+import { GA_MEASUREMENT_ID } from '@/shared/lib/analytics';
 import { AppNavigation } from '@/widgets/app-navigation';
 
 import Providers from './providers';
@@ -32,6 +34,7 @@ const RootLayout = ({
         <Providers>
           <AppNavigation>{children}</AppNavigation>
         </Providers>
+        {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
       </body>
     </html>
   );
