@@ -1,53 +1,43 @@
-groups:
-  - claude
-  - codex
+groups: []
 
 overrides:
-  # 스킬 — 워크플로(git-commit, write-pr, planning, resolve-reviews)만 유지
-  claude/skills/api-design: false
-  claude/skills/database-schema: false
-  claude/skills/docker: false
-  claude/skills/java-spring-arch: false
-  claude/skills/kotest-guide: false
-  claude/skills/kotlin-spring-arch: false
-  claude/skills/migration-guide: false
-  claude/skills/security-checklist: false
-  claude/skills/systematic-debugging: false
-  claude/skills/test: false
-  claude/skills/the-sdk: false
-  codex/skills/api-design: false
-  codex/skills/database-schema: false
-  codex/skills/docker: false
-  codex/skills/java-spring-arch: false
-  codex/skills/kotest-guide: false
-  codex/skills/kotlin-spring-arch: false
-  codex/skills/migration-guide: false
-  codex/skills/security-checklist: false
-  codex/skills/systematic-debugging: false
-  codex/skills/test: false
-  codex/skills/the-sdk: false
-
-  # 에이전트 — web-researcher만 유지
-  claude/agents/contradiction-finder: false
-  claude/agents/kotlin-convention-validator: false
-  claude/agents/doc-polisher: false
-  claude/agents/prompt-polisher: false
-  claude/agents/kotlin-test-fixer: false
-  codex/agents/contradiction-finder: false
-  codex/agents/kotlin-convention-validator: false
-  codex/agents/doc-polisher: false
-  codex/agents/prompt-polisher: false
-  codex/agents/kotlin-test-fixer: false
-
-  # 훅 — 필수(dispatcher + settings/hooks-json) + prettier, eslint
+  claude/skills/git-commit: true
+  claude/skills/write-pr: true
+  claude/skills/resolve-reviews: true
+  claude/skills/nextjs-fsd-architecture: true
+  claude/skills/nextjs-turborepo-fsd: true
+  claude/skills/nextjs-package-boundaries: true
+  claude/skills/tailwind-shadcn: true
+  claude/skills/tanstack-query-zod: true
+  claude/agents/contradiction-finder: true
+  claude/agents/doc-polisher: true
+  claude/agents/web-researcher: true
+  claude/agents/frontend-convention-validator: true
   claude/hooks/dispatcher: true
   claude/settings: true
-  claude/hooks/prettier: true
   claude/hooks/eslint: true
+  claude/hooks/prettier: true
+  claude/hooks/ts-check: true
+
+  codex/skills/git-commit: true
+  codex/skills/write-pr: true
+  codex/skills/resolve-reviews: true
+  codex/skills/nextjs-fsd-architecture: true
+  codex/skills/nextjs-turborepo-fsd: true
+  codex/skills/nextjs-package-boundaries: true
+  codex/skills/tailwind-shadcn: true
+  codex/skills/tanstack-query-zod: true
+  codex/agents/contradiction-finder: true
+  codex/agents/doc-polisher: true
+  codex/agents/web-researcher: true
+  codex/agents/frontend-convention-validator: true
   codex/hooks/dispatcher: true
   codex/hooks-json: true
-  codex/hooks/prettier: true
   codex/hooks/eslint: true
+  codex/hooks/prettier: true
+  codex/hooks/ts-check: true
 
-# PR 설정 — 팀 공용어 한국어
+  nextjs/fsd/steiger-config: true
+  nextjs/fsd/dependency-check: true
+
 language: ko
