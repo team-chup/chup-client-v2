@@ -34,7 +34,13 @@ const TransportSubsidyResultButtons = ({ application }: TransportSubsidyResultBu
     );
   };
 
-  if (application.status !== 'PENDING') return null;
+  if (application.status !== 'PENDING') {
+    return (
+      <span className="text-muted-foreground text-sm">
+        {application.status === 'APPROVED' ? '승인 완료' : '거절 완료'}
+      </span>
+    );
+  }
 
   return (
     <div className="flex gap-1">

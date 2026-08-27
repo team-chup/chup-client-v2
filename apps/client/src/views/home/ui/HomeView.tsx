@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import {
   Badge,
   Button,
@@ -53,42 +55,51 @@ const HomeView = () => {
         <BriefcaseBusiness className="text-primary-foreground/10 absolute -right-8 -bottom-10 size-52" />
       </section>
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <StatCard
-          label="모집중 공고"
-          value={dashboard ? `${dashboard.openJobs}개` : '-'}
-          note={
-            dashboard
-              ? dashboard.openJobs > 0
-                ? '지금 지원할 수 있어요'
-                : '현재 모집중인 공고가 없어요'
-              : '불러오는 중이에요'
-          }
-          icon={BriefcaseBusiness}
-        />
-        <StatCard
-          label="나의 지원"
-          value={dashboard ? `${dashboard.myApplications}건` : '-'}
-          note={
-            dashboard
-              ? dashboard.myApplications > 0
-                ? '최근 지원 현황'
-                : '아직 지원한 공고가 없어요'
-              : '불러오는 중이에요'
-          }
-          icon={Send}
-        />
-        <StatCard
-          label="서류 합격"
-          value={dashboard ? `${dashboard.passed}건` : '-'}
-          note={
-            dashboard
-              ? dashboard.passed > 0
-                ? '새로운 결과가 있어요'
-                : '새로운 결과가 없어요'
-              : '불러오는 중이에요'
-          }
-          icon={UserRoundCheck}
-        />
+        <Link href="/jobs" className="group block focus-visible:outline-none">
+          <StatCard
+            label="모집중 공고"
+            value={dashboard ? `${dashboard.openJobs}개` : '-'}
+            note={
+              dashboard
+                ? dashboard.openJobs > 0
+                  ? '지금 지원할 수 있어요'
+                  : '현재 모집중인 공고가 없어요'
+                : '불러오는 중이에요'
+            }
+            icon={BriefcaseBusiness}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
+        <Link href="/applications" className="group block focus-visible:outline-none">
+          <StatCard
+            label="나의 지원"
+            value={dashboard ? `${dashboard.myApplications}건` : '-'}
+            note={
+              dashboard
+                ? dashboard.myApplications > 0
+                  ? '최근 지원 현황'
+                  : '아직 지원한 공고가 없어요'
+                : '불러오는 중이에요'
+            }
+            icon={Send}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
+        <Link href="/applications" className="group block focus-visible:outline-none">
+          <StatCard
+            label="서류 합격"
+            value={dashboard ? `${dashboard.passed}건` : '-'}
+            note={
+              dashboard
+                ? dashboard.passed > 0
+                  ? '새로운 결과가 있어요'
+                  : '새로운 결과가 없어요'
+                : '불러오는 중이에요'
+            }
+            icon={UserRoundCheck}
+            className="group-hover:border-primary/30 group-focus-visible:border-primary group-focus-visible:ring-primary/30 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md group-focus-visible:ring-3"
+          />
+        </Link>
       </section>
       <section>
         <div className="mb-4 flex items-end justify-between">
