@@ -17,6 +17,7 @@ import { FileText, Plus, Send, X } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { usePostTransportSubsidy } from '@/entities/transport-subsidy';
+import { isPayloadTooLargeError } from '@/shared/lib/isPayloadTooLargeError';
 
 import {
   type TransportSubsidyApplicationReqType,
@@ -72,7 +73,12 @@ const TransportSubsidyApplicationForm = ({
         reset();
         toast.success('교통비 지원을 신청했습니다.');
       },
-      onError: () => toast.error('교통비 지원 신청에 실패했습니다. 다시 시도해주세요.'),
+      onError: (error) =>
+        toast.error(
+          isPayloadTooLargeError(error)
+            ? '파일 크기가 너무 큽니다. 각 파일은 20MB 이하로 첨부해주세요.'
+            : '교통비 지원 신청에 실패했습니다. 다시 시도해주세요.',
+        ),
     });
   };
 
@@ -119,7 +125,7 @@ const TransportSubsidyApplicationForm = ({
               <div>
                 <p className="font-medium">증빙 서류</p>
                 <p className="text-muted-foreground mt-1 text-sm">
-                  이미지 또는 PDF, 파일당 최대 10MB
+                  이미지 또는 PDF, 파일당 최대 20MB
                 </p>
               </div>
               <Badge variant="secondary">
