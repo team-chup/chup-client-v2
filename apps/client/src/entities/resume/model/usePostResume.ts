@@ -4,6 +4,7 @@ import { type ApiResponseType, post } from '@chup/core/shared';
 import { toast } from '@chup/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { GA_EVENT, trackEvent } from '@/shared/lib/analytics';
 import { isPayloadTooLargeError } from '@/shared/lib/isPayloadTooLargeError';
 
 import { resumeUrl } from '../api/endpoints';
@@ -37,6 +38,7 @@ export const usePostResume = () => {
         ...(currentResumes ?? []),
         resume,
       ]);
+      trackEvent(GA_EVENT.uploadResume);
       toast.success('이력서가 저장되었습니다.');
     },
     onError: (error) => {

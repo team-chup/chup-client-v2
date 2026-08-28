@@ -9,6 +9,7 @@ import { usePostApplication } from '@/entities/application';
 import type { JobPositionType } from '@/entities/job';
 import { useGetResumes } from '@/entities/resume';
 import { useGetMe } from '@/entities/user';
+import { GA_EVENT, trackEvent } from '@/shared/lib/analytics';
 
 interface ApplyButtonProps {
   jobId: number;
@@ -61,6 +62,11 @@ const ApplyButton = ({ jobId, position, onComplete }: ApplyButtonProps) => {
       { jobId, jobPositionId: position.id, resumeIds },
       {
         onSuccess: () => {
+          trackEvent(GA_EVENT.applyJob, {
+            job_id: jobId,
+            position_id: position.id,
+            position_name: position.name,
+          });
           onComplete();
           toast.success(`${position.name} 포지션에 지원했습니다.`);
         },

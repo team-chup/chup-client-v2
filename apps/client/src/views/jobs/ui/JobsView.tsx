@@ -6,6 +6,7 @@ import { Button, Input } from '@chup/ui';
 import { CircleAlert, Inbox, Loader2, Search, SlidersHorizontal } from 'lucide-react';
 
 import { type EmploymentType, JobCard, useGetJobs } from '@/entities/job';
+import { GA_EVENT, trackEvent } from '@/shared/lib/analytics';
 import { JobDetail } from '@/widgets/job-detail';
 
 const employmentItems: { label: string; value?: EmploymentType }[] = [
@@ -46,6 +47,7 @@ const JobsView = () => {
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onBlur={() => query && trackEvent(GA_EVENT.searchJobs, { query })}
             className="pl-9"
             placeholder="회사명 또는 포지션 검색"
           />
@@ -56,7 +58,10 @@ const JobsView = () => {
               key={item.label}
               size="sm"
               variant={employmentType === item.value ? 'default' : 'outline'}
-              onClick={() => setEmploymentType(item.value)}
+              onClick={() => {
+                setEmploymentType(item.value);
+                trackEvent(GA_EVENT.filterJobs, { employment_type: item.value ?? 'ALL' });
+              }}
             >
               {item.label}
             </Button>
@@ -70,7 +75,12 @@ const JobsView = () => {
         <Button
           variant={isDeadlineAscending ? 'secondary' : 'ghost'}
           size="sm"
-          onClick={() => setIsDeadlineAscending((currentSort) => !currentSort)}
+          onClick={() => {
+            setIsDeadlineAscending((currentSort) => !currentSort);
+            trackEvent(GA_EVENT.sortJobs, {
+              sort: isDeadlineAscending ? 'default' : 'deadline_asc',
+            });
+          }}
         >
           <SlidersHorizontal /> 마감 임박순
         </Button>

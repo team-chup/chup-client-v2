@@ -3,8 +3,11 @@
 import { API_BASE_URL, authUrl } from '@chup/core/shared';
 import { BrandLogo, Button } from '@chup/ui';
 
+import { GA_EVENT, trackEvent } from '@/shared/lib/analytics';
+
 const SigninView = () => {
   const handleLogin = () => {
+    trackEvent(GA_EVENT.loginClick);
     window.location.href = `${API_BASE_URL}${authUrl.getDatagsmLogin(window.location.origin)}`;
   };
 
