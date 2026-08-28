@@ -1,5 +1,7 @@
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
+export const IS_GA_ENABLED = Boolean(GA_MEASUREMENT_ID) && process.env.VERCEL_ENV === 'production';
+
 export const GA_EVENT = {
   loginClick: 'login_click',
   logout: 'logout',
