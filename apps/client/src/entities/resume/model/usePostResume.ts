@@ -4,6 +4,9 @@ import { type ApiResponseType, post } from '@chup/core/shared';
 import { toast } from '@chup/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { GA_EVENT, trackEvent } from '@/shared/lib/analytics';
+import { isPayloadTooLargeError } from '@/shared/lib/isPayloadTooLargeError';
+
 import { resumeUrl } from '../api/endpoints';
 import { resumeQueryKeys } from './queryKeys';
 import type { ResumeType } from './types';
@@ -35,10 +38,15 @@ export const usePostResume = () => {
         ...(currentResumes ?? []),
         resume,
       ]);
+      trackEvent(GA_EVENT.uploadResume);
       toast.success('이력서가 저장되었습니다.');
     },
-    onError: () => {
-      toast.error('이력서 업로드에 실패했습니다.');
+    onError: (error) => {
+      toast.error(
+        isPayloadTooLargeError(error)
+          ? '파일 크기가 너무 큽니다. 20MB 이하의 파일만 업로드할 수 있습니다.'
+          : '이력서 업로드에 실패했습니다.',
+      );
     },
   });
 };
