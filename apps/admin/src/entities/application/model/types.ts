@@ -14,6 +14,7 @@ export interface ApplicationType {
   sourcePlatform: string | null;
   isExternal: boolean;
   status: ApplicationStatusType;
+  interviewAt: string | null;
   appliedAt: string;
 }
 
@@ -23,4 +24,5 @@ export interface GetApplicantsParamsType {
 
 export interface PatchApplicantResultReqType {
   status: ApplicationStatusType;
+  interviewAt?: string;
 }
