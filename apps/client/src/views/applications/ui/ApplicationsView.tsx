@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -9,13 +12,15 @@ import {
   CardTitle,
   StatCard,
 } from '@chup/ui';
-import { CircleAlert, Clock3, Inbox, Loader2, Send, UserRoundCheck } from 'lucide-react';
+import { CircleAlert, Clock3, Inbox, Loader2, Plus, Send, UserRoundCheck } from 'lucide-react';
 
 import { StatusBadge, useGetApplications } from '@/entities/application';
+import { ExternalApplicationRegistrationForm } from '@/features/external-application-registration';
 
 import { formatAppliedAt } from '../lib/formatAppliedAt';
 
 const ApplicationsView = () => {
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const { data: applications, isPending, isError } = useGetApplications();
 
   const reviewingCount =
@@ -25,13 +30,20 @@ const ApplicationsView = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <p className="text-primary text-sm font-semibold">지원 현황</p>
-        <h1 className="mt-1 text-3xl font-bold">지원 여정을 확인하세요</h1>
-        <p className="text-muted-foreground mt-2">
-          제출한 지원서와 전형 결과를 한눈에 확인할 수 있어요.
-        </p>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-primary text-sm font-semibold">지원 현황</p>
+          <h1 className="mt-1 text-3xl font-bold">지원 여정을 확인하세요</h1>
+          <p className="text-muted-foreground mt-2">
+            제출한 지원서와 전형 결과를 한눈에 확인할 수 있어요.
+          </p>
+        </div>
+        <Button variant="outline" onClick={() => setIsFormOpen(true)}>
+          <Plus />
+          외부 지원 내역 등록
+        </Button>
       </div>
+      {isFormOpen && <ExternalApplicationRegistrationForm onClose={() => setIsFormOpen(false)} />}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <StatCard
           label="전체 지원"
