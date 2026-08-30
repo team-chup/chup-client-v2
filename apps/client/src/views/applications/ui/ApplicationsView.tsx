@@ -17,8 +17,6 @@ import { CircleAlert, Clock3, Inbox, Loader2, Plus, Send, UserRoundCheck } from 
 import { StatusBadge, useGetApplications } from '@/entities/application';
 import { ExternalApplicationRegistrationForm } from '@/features/external-application-registration';
 
-import { formatAppliedAt } from '../lib/formatAppliedAt';
-
 const ApplicationsView = () => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const { data: applications, isPending, isError } = useGetApplications();
@@ -97,9 +95,6 @@ const ApplicationsView = () => {
                       {application.sourcePlatform}
                     </Badge>
                   )}
-                </p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {formatAppliedAt(application.appliedAt)} 지원
                 </p>
               </div>
               <StatusBadge status={application.status} />

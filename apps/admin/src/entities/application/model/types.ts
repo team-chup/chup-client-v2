@@ -15,7 +15,6 @@ export interface ApplicationType {
   isExternal: boolean;
   status: ApplicationStatusType;
   interviewAt: string | null;
-  appliedAt: string;
 }
 
 export interface GetApplicantsParamsType {

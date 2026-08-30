@@ -11,7 +11,6 @@ export interface ApplicationType {
   sourcePlatform: string | null;
   status: ApplicationStatusType;
   interviewAt: string | null;
-  appliedAt: string;
 }
 
 export interface PostApplicationReqType {
