@@ -17,6 +17,8 @@ import { useGetAdminJobs } from '@/entities/dashboard';
 import { ApplicantResultButtons } from '@/features/applicant-result';
 import { ManualApplicantRegistrationForm } from '@/features/manual-applicant-registration';
 
+import { formatInterviewAt } from '../lib/formatInterviewAt';
+
 const APPLICATION_STATUS_VALUES: ApplicationStatusType[] = [
   'APPLIED',
   'INTERVIEW_SCHEDULED',
@@ -137,6 +139,7 @@ const ApplicantsView = () => {
                   <th className="px-5 py-3 font-medium">전화번호</th>
                   <th className="px-5 py-3 font-medium">지원 회사</th>
                   <th className="px-5 py-3 font-medium">포지션</th>
+                  <th className="px-5 py-3 font-medium">면접 일시</th>
                   <th className="px-5 py-3 font-medium">상태</th>
                   <th className="px-5 py-3 font-medium">처리</th>
                 </tr>
@@ -144,7 +147,7 @@ const ApplicantsView = () => {
               <tbody>
                 {isPending && (
                   <tr>
-                    <td colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+                    <td colSpan={7} className="text-muted-foreground py-10 text-center text-sm">
                       <div className="flex flex-col items-center gap-2">
                         <Loader2 className="size-5 animate-spin" />
                         지원자 목록을 불러오는 중이에요.
@@ -154,7 +157,7 @@ const ApplicantsView = () => {
                 )}
                 {isError && (
                   <tr>
-                    <td colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+                    <td colSpan={7} className="text-muted-foreground py-10 text-center text-sm">
                       <div className="flex flex-col items-center gap-2">
                         <CircleAlert className="size-5" />
                         지원자 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.
@@ -164,7 +167,7 @@ const ApplicantsView = () => {
                 )}
                 {!isPending && !isError && filteredApplicants?.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="text-muted-foreground py-10 text-center text-sm">
+                    <td colSpan={7} className="text-muted-foreground py-10 text-center text-sm">
                       <div className="flex flex-col items-center gap-2">
                         <Inbox className="size-5" />
                         아직 지원자가 없어요.
@@ -192,6 +195,9 @@ const ApplicantsView = () => {
                       </div>
                     </td>
                     <td className="px-5 py-4">{applicant.positionName ?? '-'}</td>
+                    <td className="text-muted-foreground px-5 py-4">
+                      {formatInterviewAt(applicant.interviewAt)}
+                    </td>
                     <td className="px-5 py-4">
                       <StatusBadge status={applicant.status} />
                     </td>

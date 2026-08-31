@@ -17,6 +17,8 @@ import { CircleAlert, Clock3, Inbox, Loader2, Plus, Send, UserRoundCheck } from 
 import { StatusBadge, useGetApplications } from '@/entities/application';
 import { ExternalApplicationRegistrationForm } from '@/features/external-application-registration';
 
+import { formatInterviewAt } from '../lib/formatInterviewAt';
+
 const ApplicationsView = () => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const { data: applications, isPending, isError } = useGetApplications();
@@ -96,6 +98,11 @@ const ApplicationsView = () => {
                     </Badge>
                   )}
                 </p>
+                {application.status === 'INTERVIEW_SCHEDULED' && (
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    면접 일시: {formatInterviewAt(application.interviewAt)}
+                  </p>
+                )}
               </div>
               <StatusBadge status={application.status} />
             </div>

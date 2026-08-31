@@ -24,7 +24,7 @@ import {
 } from '@chup/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import type { ApplicationStatusType } from '@/entities/application';
 import { type StudentSearchResultType, useGetSearchStudents } from '@/entities/user';
@@ -66,8 +66,10 @@ const ManualApplicantRegistrationForm = ({ onClose }: ManualApplicantRegistratio
       companyName: '',
       sourcePlatform: '',
       status: 'APPLIED',
+      interviewAt: '',
     },
   });
+  const status = useWatch({ control, name: 'status' });
 
   const handleSubmitForm = (body: ManualApplicantRegistrationReqType) => {
     postManualApplicant(body, {
@@ -197,6 +199,25 @@ const ManualApplicantRegistrationForm = ({ onClose }: ManualApplicantRegistratio
               <p className="text-destructive mt-1 text-sm">{errors.status.message}</p>
             )}
           </div>
+          {status === 'INTERVIEW_SCHEDULED' && (
+            <div>
+              <Controller
+                control={control}
+                name="interviewAt"
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="datetime-local"
+                    aria-label="면접 일시"
+                    aria-invalid={!!errors.interviewAt}
+                  />
+                )}
+              />
+              {errors.interviewAt && (
+                <p className="text-destructive mt-1 text-sm">{errors.interviewAt.message}</p>
+              )}
+            </div>
+          )}
           {errors.root && (
             <p className="text-destructive text-sm sm:col-span-2">{errors.root.message}</p>
           )}
