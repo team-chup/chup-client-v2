@@ -9,6 +9,7 @@ import { CircleAlert, Download, FileArchive, Inbox, Loader2, Plus } from 'lucide
 
 import {
   applicantUrl,
+  type ApplicationSourceType,
   type ApplicationStatusType,
   StatusBadge,
   useGetApplicants,
@@ -34,6 +35,14 @@ const APPLICATION_STATUS_FILTERS: { label: string; value?: ApplicationStatusType
   { label: '면접 탈락', value: 'FAILED' },
 ];
 
+const APPLICATION_SOURCE_VALUES: ApplicationSourceType[] = ['OFFICIAL', 'EXTERNAL'];
+
+const APPLICATION_SOURCE_FILTERS: { label: string; value?: ApplicationSourceType }[] = [
+  { label: '전체' },
+  { label: '공식 지원', value: 'OFFICIAL' },
+  { label: '외부 지원', value: 'EXTERNAL' },
+];
+
 const ApplicantsView = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,6 +51,12 @@ const ApplicantsView = () => {
     statusParam as ApplicationStatusType,
   )
     ? (statusParam as ApplicationStatusType)
+    : undefined;
+  const sourceParam = searchParams.get('source');
+  const source: ApplicationSourceType | undefined = APPLICATION_SOURCE_VALUES.includes(
+    sourceParam as ApplicationSourceType,
+  )
+    ? (sourceParam as ApplicationSourceType)
     : undefined;
 
   const [jobPostingId, setJobPostingId] = useState<number>();
@@ -52,8 +67,13 @@ const ApplicantsView = () => {
     isError,
   } = useGetApplicants(jobPostingId === undefined ? {} : { jobPostingId });
   const filteredApplicants = useMemo(
-    () => (status ? applicants?.filter((applicant) => applicant.status === status) : applicants),
-    [applicants, status],
+    () =>
+      applicants?.filter(
+        (applicant) =>
+          (!status || applicant.status === status) &&
+          (!source || applicant.applicationSource === source),
+      ),
+    [applicants, status, source],
   );
   const { data: jobs } = useGetAdminJobs();
   const selectedCompanyName = jobs?.find((job) => job.id === jobPostingId)?.companyName;
@@ -62,6 +82,13 @@ const ApplicantsView = () => {
     const params = new URLSearchParams(searchParams);
     if (nextStatus) params.set('status', nextStatus);
     else params.delete('status');
+    router.replace(params.size > 0 ? `/applicants?${params}` : '/applicants', { scroll: false });
+  };
+
+  const handleSourceChange = (nextSource?: ApplicationSourceType) => {
+    const params = new URLSearchParams(searchParams);
+    if (nextSource) params.set('source', nextSource);
+    else params.delete('source');
     router.replace(params.size > 0 ? `/applicants?${params}` : '/applicants', { scroll: false });
   };
 
@@ -116,6 +143,18 @@ const ApplicantsView = () => {
             size="sm"
             variant={status === filter.value ? 'default' : 'outline'}
             onClick={() => handleStatusChange(filter.value)}
+          >
+            {filter.label}
+          </Button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {APPLICATION_SOURCE_FILTERS.map((filter) => (
+          <Button
+            key={filter.label}
+            size="sm"
+            variant={source === filter.value ? 'default' : 'outline'}
+            onClick={() => handleSourceChange(filter.value)}
           >
             {filter.label}
           </Button>
