@@ -18,7 +18,7 @@ import { useGetAdminJobs } from '@/entities/dashboard';
 import { ApplicantResultButtons } from '@/features/applicant-result';
 import { ManualApplicantRegistrationForm } from '@/features/manual-applicant-registration';
 
-import { formatAppliedAt } from '../lib/formatAppliedAt';
+import { formatInterviewAt } from '../lib/formatInterviewAt';
 
 const APPLICATION_STATUS_VALUES: ApplicationStatusType[] = [
   'APPLIED',
@@ -178,7 +178,7 @@ const ApplicantsView = () => {
                   <th className="px-5 py-3 font-medium">전화번호</th>
                   <th className="px-5 py-3 font-medium">지원 회사</th>
                   <th className="px-5 py-3 font-medium">포지션</th>
-                  <th className="px-5 py-3 font-medium">지원 일시</th>
+                  <th className="px-5 py-3 font-medium">면접 일시</th>
                   <th className="px-5 py-3 font-medium">상태</th>
                   <th className="px-5 py-3 font-medium">처리</th>
                 </tr>
@@ -235,7 +235,7 @@ const ApplicantsView = () => {
                     </td>
                     <td className="px-5 py-4">{applicant.positionName ?? '-'}</td>
                     <td className="text-muted-foreground px-5 py-4">
-                      {formatAppliedAt(applicant.appliedAt)}
+                      {formatInterviewAt(applicant.interviewAt)}
                     </td>
                     <td className="px-5 py-4">
                       <StatusBadge status={applicant.status} />

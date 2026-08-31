@@ -14,10 +14,11 @@ export const usePatchApplicantResult = () => {
     mutationFn: async ({
       applicationId,
       status,
+      interviewAt,
     }: PatchApplicantResultReqType & { applicationId: number }) => {
       const response = await patch<ApiResponseType<ApplicationType>>(
         applicantUrl.patchApplicantResult(applicationId),
-        { status },
+        { status, ...(interviewAt && { interviewAt }) },
       );
 
       return response.data;

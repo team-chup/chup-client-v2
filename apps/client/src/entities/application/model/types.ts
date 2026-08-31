@@ -1,4 +1,5 @@
-export type ApplicationStatusType = 'APPLIED' | 'INTERVIEW_SCHEDULED' | 'PASSED' | 'FAILED';
+export type ApplicationStatusType =
+  'APPLIED' | 'DOCUMENT_FAILED' | 'INTERVIEW_SCHEDULED' | 'PASSED' | 'FAILED';
 
 export type ApplicationSourceType = 'OFFICIAL' | 'EXTERNAL';
 
@@ -9,7 +10,7 @@ export interface ApplicationType {
   applicationSource: ApplicationSourceType;
   sourcePlatform: string | null;
   status: ApplicationStatusType;
-  appliedAt: string;
+  interviewAt: string | null;
 }
 
 export interface PostApplicationReqType {
