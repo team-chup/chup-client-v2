@@ -28,13 +28,11 @@ import { EVIDENCE_MAX_COUNT } from '../model/validateEvidenceFiles';
 interface TransportSubsidyApplicationFormProps {
   isApplicationsReady: boolean;
   isEligible: boolean;
-  isLimitReached: boolean;
 }
 
 const TransportSubsidyApplicationForm = ({
   isApplicationsReady,
   isEligible,
-  isLimitReached,
 }: TransportSubsidyApplicationFormProps) => {
   const { mutate: postTransportSubsidy, isPending } = usePostTransportSubsidy();
   const {
@@ -51,7 +49,7 @@ const TransportSubsidyApplicationForm = ({
   });
 
   const files = useWatch({ control, name: 'files' });
-  const isDisabled = isPending || !isApplicationsReady || !isEligible || isLimitReached;
+  const isDisabled = isPending || !isApplicationsReady || !isEligible;
   const isFileLimitReached = files.length === EVIDENCE_MAX_COUNT;
 
   const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,11 +180,6 @@ const TransportSubsidyApplicationForm = ({
           {!isEligible && (
             <p className="text-destructive text-sm">
               교통비 지원은 3학년 학생만 신청할 수 있습니다.
-            </p>
-          )}
-          {isLimitReached && (
-            <p className="text-destructive text-sm">
-              승인된 교통비 지원은 최대 2회까지 신청할 수 있습니다.
             </p>
           )}
           <Button type="submit" size="lg" disabled={isDisabled}>
