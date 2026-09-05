@@ -21,9 +21,7 @@ const TransportSubsidiesView = () => {
     isSuccess: isApplicationsSuccess,
   } = useGetTransportSubsidies();
 
-  const approvedCount = applications?.filter(({ status }) => status === 'APPROVED').length ?? 0;
   const isEligible = user?.studentId?.startsWith('3') ?? false;
-  const isLimitReached = isApplicationsSuccess && approvedCount >= 2;
 
   return (
     <div className="flex flex-col gap-6">
@@ -37,7 +35,6 @@ const TransportSubsidiesView = () => {
       <TransportSubsidyApplicationForm
         isApplicationsReady={isApplicationsSuccess}
         isEligible={isEligible}
-        isLimitReached={isLimitReached}
       />
       <Card>
         <CardHeader>

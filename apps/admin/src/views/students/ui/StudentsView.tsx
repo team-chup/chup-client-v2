@@ -94,7 +94,7 @@ const StudentsView = () => {
                   <tr key={student.userId} className="border-t">
                     <td className="px-5 py-4 font-semibold">{student.name}</td>
                     <td className="px-5 py-4">{student.studentId}</td>
-                    <td className="px-5 py-4">{student.approvedCount}/2</td>
+                    <td className="px-5 py-4">{student.approvedCount}</td>
                     <td className="px-5 py-4">{student.totalCount}</td>
                     <td className="px-5 py-4">
                       <Button
