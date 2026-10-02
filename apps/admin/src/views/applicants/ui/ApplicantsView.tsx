@@ -1,96 +1,47 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@chup/ui';
 import { CircleAlert, Download, FileArchive, Inbox, Loader2, Plus } from 'lucide-react';
 
-import {
-  applicantUrl,
-  type ApplicationSourceType,
-  type ApplicationStatusType,
-  StatusBadge,
-  useGetApplicants,
-} from '@/entities/application';
+import { applicantUrl, StatusBadge, useGetApplicants } from '@/entities/application';
 import { useGetAdminJobs } from '@/entities/dashboard';
 import { ApplicantResultButtons } from '@/features/applicant-result';
 import { ManualApplicantRegistrationForm } from '@/features/manual-applicant-registration';
 
 import { formatInterviewAt } from '../lib/formatInterviewAt';
-
-const APPLICATION_STATUS_VALUES: ApplicationStatusType[] = [
-  'APPLIED',
-  'INTERVIEW_SCHEDULED',
-  'PASSED',
-  'FAILED',
-];
-
-const APPLICATION_STATUS_FILTERS: { label: string; value?: ApplicationStatusType }[] = [
-  { label: '전체' },
-  { label: '결과 대기', value: 'APPLIED' },
-  { label: '면접 예정', value: 'INTERVIEW_SCHEDULED' },
-  { label: '최종 합격', value: 'PASSED' },
-  { label: '면접 탈락', value: 'FAILED' },
-];
-
-const APPLICATION_SOURCE_VALUES: ApplicationSourceType[] = ['OFFICIAL', 'EXTERNAL'];
-
-const APPLICATION_SOURCE_FILTERS: { label: string; value?: ApplicationSourceType }[] = [
-  { label: '전체' },
-  { label: '공식 지원', value: 'OFFICIAL' },
-  { label: '외부 지원', value: 'EXTERNAL' },
-];
+import {
+  type ApplicantFiltersType,
+  getApplicantsHref,
+  matchesApplicantFilters,
+  parseApplicantFilters,
+} from '../model/filters';
+import ApplicantFilters from './ApplicantFilters';
 
 const ApplicantsView = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const statusParam = searchParams.get('status');
-  const status: ApplicationStatusType | undefined = APPLICATION_STATUS_VALUES.includes(
-    statusParam as ApplicationStatusType,
-  )
-    ? (statusParam as ApplicationStatusType)
-    : undefined;
-  const sourceParam = searchParams.get('source');
-  const source: ApplicationSourceType | undefined = APPLICATION_SOURCE_VALUES.includes(
-    sourceParam as ApplicationSourceType,
-  )
-    ? (sourceParam as ApplicationSourceType)
-    : undefined;
+  const filters = parseApplicantFilters(searchParams);
+  const { jobPostingId } = filters;
+  const hasFilters = Object.keys(filters).length > 0;
 
-  const [jobPostingId, setJobPostingId] = useState<number>();
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const {
     data: applicants,
     isPending,
     isError,
   } = useGetApplicants(jobPostingId === undefined ? {} : { jobPostingId });
-  const filteredApplicants = useMemo(
-    () =>
-      applicants?.filter(
-        (applicant) =>
-          (!status || applicant.status === status) &&
-          (!source || applicant.applicationSource === source),
-      ),
-    [applicants, status, source],
+  const filteredApplicants = applicants?.filter((applicant) =>
+    matchesApplicantFilters(applicant, filters),
   );
   const { data: jobs } = useGetAdminJobs();
   const selectedCompanyName = jobs?.find((job) => job.id === jobPostingId)?.companyName;
 
-  const handleStatusChange = (nextStatus?: ApplicationStatusType) => {
-    const params = new URLSearchParams(searchParams);
-    if (nextStatus) params.set('status', nextStatus);
-    else params.delete('status');
-    router.replace(params.size > 0 ? `/applicants?${params}` : '/applicants', { scroll: false });
-  };
-
-  const handleSourceChange = (nextSource?: ApplicationSourceType) => {
-    const params = new URLSearchParams(searchParams);
-    if (nextSource) params.set('source', nextSource);
-    else params.delete('source');
-    router.replace(params.size > 0 ? `/applicants?${params}` : '/applicants', { scroll: false });
-  };
+  const handleFiltersChange = (nextFilters: ApplicantFiltersType) =>
+    router.replace(getApplicantsHref(nextFilters), { scroll: false });
 
   return (
     <div className="flex flex-col gap-6">
@@ -117,49 +68,12 @@ const ApplicantsView = () => {
         </div>
       </div>
       {isFormOpen && <ManualApplicantRegistrationForm onClose={() => setIsFormOpen(false)} />}
-      <div className="flex flex-wrap gap-2">
-        <Button
-          size="sm"
-          variant={jobPostingId === undefined ? 'default' : 'outline'}
-          onClick={() => setJobPostingId(undefined)}
-        >
-          전체
-        </Button>
-        {jobs?.map((job) => (
-          <Button
-            key={job.id}
-            size="sm"
-            variant={jobPostingId === job.id ? 'default' : 'outline'}
-            onClick={() => setJobPostingId(job.id)}
-          >
-            {job.companyName}
-          </Button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {APPLICATION_STATUS_FILTERS.map((filter) => (
-          <Button
-            key={filter.label}
-            size="sm"
-            variant={status === filter.value ? 'default' : 'outline'}
-            onClick={() => handleStatusChange(filter.value)}
-          >
-            {filter.label}
-          </Button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {APPLICATION_SOURCE_FILTERS.map((filter) => (
-          <Button
-            key={filter.label}
-            size="sm"
-            variant={source === filter.value ? 'default' : 'outline'}
-            onClick={() => handleSourceChange(filter.value)}
-          >
-            {filter.label}
-          </Button>
-        ))}
-      </div>
+      <ApplicantFilters
+        filters={filters}
+        jobs={jobs}
+        applicants={applicants}
+        onChange={handleFiltersChange}
+      />
       <Card className="pb-1">
         <CardHeader>
           <CardTitle>
@@ -209,7 +123,7 @@ const ApplicantsView = () => {
                     <td colSpan={7} className="text-muted-foreground py-10 text-center text-sm">
                       <div className="flex flex-col items-center gap-2">
                         <Inbox className="size-5" />
-                        아직 지원자가 없어요.
+                        {hasFilters ? '조건에 맞는 지원자가 없어요.' : '아직 지원자가 없어요.'}
                       </div>
                     </td>
                   </tr>
