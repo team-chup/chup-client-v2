@@ -19,6 +19,7 @@ import { ChevronDown } from 'lucide-react';
 import type { ApplicationStatusType, ApplicationType } from '@/entities/application';
 import { usePatchApplicantResult } from '@/entities/application';
 
+import { toDateTimeLocalValue } from '../lib/toDateTimeLocalValue';
 import { ApplicationResultSchema } from '../model/schema';
 
 interface ApplicantResultButtonsProps {
@@ -35,6 +36,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
   const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState<boolean>(false);
   const [interviewAt, setInterviewAt] = useState<string>('');
   const { isPending, mutate: patchApplicantResult } = usePatchApplicantResult();
+  const isInterviewScheduled = application.status === 'INTERVIEW_SCHEDULED';
 
   const handleUpdate = (status: ApplicationStatusType, nextInterviewAt?: string) => {
     const result = ApplicationResultSchema.safeParse({ status, interviewAt: nextInterviewAt });
@@ -49,9 +51,14 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
       {
         onSuccess: () => {
           setIsInterviewDialogOpen(false);
+          if (status === 'PASSED') {
+            toast.success('합격 처리 후 안내 이메일을 발송했습니다.');
+            return;
+          }
+
           toast.success(
-            status === 'PASSED'
-              ? '합격 처리 후 안내 이메일을 발송했습니다.'
+            isInterviewScheduled && status === 'INTERVIEW_SCHEDULED'
+              ? '면접 일시가 수정되었습니다.'
               : '지원 결과가 변경되었습니다.',
           );
         },
@@ -62,7 +69,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
 
   const handleStatusSelect = (status: ApplicationStatusType) => {
     if (status === 'INTERVIEW_SCHEDULED') {
-      setInterviewAt('');
+      setInterviewAt(isInterviewScheduled ? toDateTimeLocalValue(application.interviewAt) : '');
       setIsInterviewDialogOpen(true);
       return;
     }
@@ -85,19 +92,25 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
         {STATUS_OPTIONS.map((option) => (
           <DropdownMenuItem
             key={option.value}
-            disabled={application.status === option.value}
+            disabled={application.status === option.value && !isInterviewScheduled}
             onClick={() => handleStatusSelect(option.value)}
           >
-            {option.label}
+            {isInterviewScheduled && option.value === 'INTERVIEW_SCHEDULED'
+              ? '면접 일시 수정'
+              : option.label}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
       <Dialog open={isInterviewDialogOpen} onOpenChange={setIsInterviewDialogOpen}>
         <DialogContent className="bg-card top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border p-6 shadow-xl">
           <form onSubmit={handleInterviewSchedule}>
-            <DialogTitle className="text-lg font-semibold">면접 일시 입력</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">
+              {isInterviewScheduled ? '면접 일시 수정' : '면접 일시 입력'}
+            </DialogTitle>
             <p className="text-muted-foreground mt-2 text-sm">
-              면접 예정 상태로 변경할 일시를 입력하세요.
+              {isInterviewScheduled
+                ? '변경할 면접 일시를 입력하세요.'
+                : '면접 예정 상태로 변경할 일시를 입력하세요.'}
             </p>
             <Input
               className="mt-4 w-full"
@@ -115,7 +128,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
                 취소
               </Button>
               <Button type="submit" disabled={isPending}>
-                변경
+                {isInterviewScheduled ? '수정' : '변경'}
               </Button>
             </div>
           </form>
