@@ -35,6 +35,7 @@ const STATUS_OPTIONS: { label: string; value: ApplicationStatusType }[] = [
 const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) => {
   const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState<boolean>(false);
   const [interviewAt, setInterviewAt] = useState<string>('');
+  const [isEditingInterview, setIsEditingInterview] = useState<boolean>(false);
   const { isPending, mutate: patchApplicantResult } = usePatchApplicantResult();
   const isInterviewScheduled = application.status === 'INTERVIEW_SCHEDULED';
 
@@ -57,7 +58,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
           }
 
           toast.success(
-            isInterviewScheduled && status === 'INTERVIEW_SCHEDULED'
+            isEditingInterview && status === 'INTERVIEW_SCHEDULED'
               ? '면접 일시가 수정되었습니다.'
               : '지원 결과가 변경되었습니다.',
           );
@@ -69,6 +70,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
 
   const handleStatusSelect = (status: ApplicationStatusType) => {
     if (status === 'INTERVIEW_SCHEDULED') {
+      setIsEditingInterview(isInterviewScheduled);
       setInterviewAt(isInterviewScheduled ? toDateTimeLocalValue(application.interviewAt) : '');
       setIsInterviewDialogOpen(true);
       return;
@@ -105,10 +107,10 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
         <DialogContent className="bg-card top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border p-6 shadow-xl">
           <form onSubmit={handleInterviewSchedule}>
             <DialogTitle className="text-lg font-semibold">
-              {isInterviewScheduled ? '면접 일시 수정' : '면접 일시 입력'}
+              {isEditingInterview ? '면접 일시 수정' : '면접 일시 입력'}
             </DialogTitle>
             <p className="text-muted-foreground mt-2 text-sm">
-              {isInterviewScheduled
+              {isEditingInterview
                 ? '변경할 면접 일시를 입력하세요.'
                 : '면접 예정 상태로 변경할 일시를 입력하세요.'}
             </p>
@@ -128,7 +130,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
                 취소
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isInterviewScheduled ? '수정' : '변경'}
+                {isEditingInterview ? '수정' : '변경'}
               </Button>
             </div>
           </form>
