@@ -22,6 +22,7 @@ import {
   type ApplicantFiltersType,
   APPLICATION_SOURCE_FILTERS,
   APPLICATION_STATUS_FILTERS,
+  changeApplicantSource,
   matchesApplicantFilters,
 } from '../model/filters';
 
@@ -109,13 +110,12 @@ const ApplicantFilters = ({ filters, jobs, applicants, onChange }: ApplicantFilt
       jobPostingId: !value || value === ALL_JOBS_VALUE ? undefined : Number(value),
     });
 
+  // 지원 응답에 공고 id가 없어 공고별 인원은 서버 집계(applicantCount)로만 알 수 있다.
+  // 이 값은 상태·지원 경로를 반영하지 않으므로 해당 필터가 없을 때만 보여준다
+  const isJobCountVisible = !status && !source;
+
   const handleSourceChange = (nextSource?: ApplicantFiltersType['source']) =>
-    onChange({
-      ...filters,
-      source: nextSource,
-      // 서류 탈락은 공식 지원에만 있어 외부 지원과 함께 걸면 항상 빈 결과가 된다
-      status: nextSource === 'EXTERNAL' && status === 'DOCUMENT_FAILED' ? undefined : status,
-    });
+    onChange(changeApplicantSource(filters, nextSource));
 
   return (
     <Card className="py-4">
@@ -139,6 +139,11 @@ const ApplicantFilters = ({ filters, jobs, applicants, onChange }: ApplicantFilt
               {jobs?.map((job) => (
                 <SelectItem key={job.id} value={String(job.id)}>
                   {job.companyName}
+                  {isJobCountVisible && (
+                    <span className="text-muted-foreground text-xs tabular-nums">
+                      {job.applicantCount}
+                    </span>
+                  )}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -165,7 +170,7 @@ const ApplicantFilters = ({ filters, jobs, applicants, onChange }: ApplicantFilt
         <FilterRow label="지원 경로">
           <FilterChip
             label="전체"
-            count={countApplicants({ status })}
+            count={countApplicants(changeApplicantSource({ status }))}
             isSelected={!source}
             onClick={() => handleSourceChange(undefined)}
           />
@@ -173,7 +178,7 @@ const ApplicantFilters = ({ filters, jobs, applicants, onChange }: ApplicantFilt
             <FilterChip
               key={filter.value}
               label={filter.label}
-              count={countApplicants({ status, source: filter.value })}
+              count={countApplicants(changeApplicantSource({ status }, filter.value))}
               isSelected={source === filter.value}
               onClick={() => handleSourceChange(filter.value)}
             />

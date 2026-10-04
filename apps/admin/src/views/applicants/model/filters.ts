@@ -51,6 +51,17 @@ export const getApplicantsHref = ({ jobPostingId, status, source }: ApplicantFil
   return params.size > 0 ? `/applicants?${params}` : '/applicants';
 };
 
+export const changeApplicantSource = (
+  filters: ApplicantFiltersType,
+  source?: ApplicationSourceType,
+): ApplicantFiltersType => ({
+  ...filters,
+  source,
+  // 서류 탈락은 공식 지원에만 있어 외부 지원과 함께 걸면 항상 빈 결과가 된다
+  status:
+    source === 'EXTERNAL' && filters.status === 'DOCUMENT_FAILED' ? undefined : filters.status,
+});
+
 // 공고 필터는 서버 조회 조건이라 상태·지원 경로만 클라이언트에서 거른다
 export const matchesApplicantFilters = (
   applicant: ApplicationType,

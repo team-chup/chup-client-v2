@@ -2,9 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 const modulePath = './filters.ts';
-const { getApplicantsHref, matchesApplicantFilters, parseApplicantFilters } = await import(
-  modulePath
-);
+const { changeApplicantSource, getApplicantsHref, matchesApplicantFilters, parseApplicantFilters } =
+  await import(modulePath);
 
 test('유효한 쿼리 파라미터만 필터로 읽는다', () => {
   assert.deepEqual(
@@ -38,4 +37,19 @@ test('상태와 지원 경로가 모두 일치하는 지원자만 남긴다', ()
     false,
   );
   assert.equal(matchesApplicantFilters(applicant, { status: 'APPLIED' }), false);
+});
+
+test('외부 지원으로 바꾸면 서류 탈락 상태를 함께 해제한다', () => {
+  assert.deepEqual(
+    changeApplicantSource({ jobPostingId: 3, status: 'DOCUMENT_FAILED' }, 'EXTERNAL'),
+    { jobPostingId: 3, source: 'EXTERNAL', status: undefined },
+  );
+  assert.deepEqual(changeApplicantSource({ status: 'DOCUMENT_FAILED' }, 'OFFICIAL'), {
+    source: 'OFFICIAL',
+    status: 'DOCUMENT_FAILED',
+  });
+  assert.deepEqual(changeApplicantSource({ status: 'APPLIED' }, 'EXTERNAL'), {
+    source: 'EXTERNAL',
+    status: 'APPLIED',
+  });
 });
