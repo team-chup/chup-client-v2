@@ -27,6 +27,7 @@ interface ApplicantResultButtonsProps {
 }
 
 const STATUS_OPTIONS: { label: string; value: ApplicationStatusType }[] = [
+  { label: '서류 탈락', value: 'DOCUMENT_FAILED' },
   { label: '면접 예정', value: 'INTERVIEW_SCHEDULED' },
   { label: '최종 합격', value: 'PASSED' },
   { label: '면접 탈락', value: 'FAILED' },
@@ -38,9 +39,17 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
   const [isEditingInterview, setIsEditingInterview] = useState<boolean>(false);
   const { isPending, mutate: patchApplicantResult } = usePatchApplicantResult();
   const isInterviewScheduled = application.status === 'INTERVIEW_SCHEDULED';
+  // 서류 탈락은 공식 채용 공고를 통해 서류를 제출한 지원자에게만 의미가 있음
+  const statusOptions = STATUS_OPTIONS.filter(
+    (option) => option.value !== 'DOCUMENT_FAILED' || application.applicationSource === 'OFFICIAL',
+  );
 
   const handleUpdate = (status: ApplicationStatusType, nextInterviewAt?: string) => {
-    const result = ApplicationResultSchema.safeParse({ status, interviewAt: nextInterviewAt });
+    const result = ApplicationResultSchema.safeParse({
+      status,
+      applicationSource: application.applicationSource,
+      interviewAt: nextInterviewAt,
+    });
 
     if (!result.success) {
       toast.error(result.error.issues[0]?.message ?? '지원 결과를 확인해주세요.');
@@ -48,7 +57,11 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
     }
 
     patchApplicantResult(
-      { applicationId: application.id, ...result.data },
+      {
+        applicationId: application.id,
+        status: result.data.status,
+        interviewAt: result.data.interviewAt,
+      },
       {
         onSuccess: () => {
           setIsInterviewDialogOpen(false);
@@ -91,7 +104,7 @@ const ApplicantResultButtons = ({ application }: ApplicantResultButtonsProps) =>
         <ChevronDown />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {STATUS_OPTIONS.map((option) => (
+        {statusOptions.map((option) => (
           <DropdownMenuItem
             key={option.value}
             disabled={application.status === option.value && !isInterviewScheduled}

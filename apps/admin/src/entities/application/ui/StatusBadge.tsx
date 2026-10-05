@@ -15,6 +15,11 @@ const APPLICATION_STATUS_META: Record<
     variant: 'default',
     className: 'bg-primary/10 text-primary hover:bg-primary/10',
   },
+  DOCUMENT_FAILED: {
+    label: '서류 탈락',
+    variant: 'secondary',
+    className: 'text-muted-foreground',
+  },
   INTERVIEW_SCHEDULED: {
     label: '면접 예정',
     variant: 'default',
