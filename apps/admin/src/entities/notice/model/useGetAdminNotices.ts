@@ -5,15 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 
 import { adminNoticeUrl } from '../api/endpoints';
 import { adminNoticeQueryKeys } from './queryKeys';
-import type { AdminNoticeType, GetAdminNoticesParamsType } from './types';
+import type { AdminNoticeType } from './types';
 
-export const useGetAdminNotices = (params: GetAdminNoticesParamsType = {}) =>
+export const useGetAdminNotices = () =>
   useQuery({
-    queryKey: adminNoticeQueryKeys.getNotices(params),
+    queryKey: adminNoticeQueryKeys.getNotices(),
     queryFn: async () => {
-      const response = await get<ApiResponseType<AdminNoticeType[]>>(
-        adminNoticeUrl.getNotices(params.q),
-      );
+      const response = await get<ApiResponseType<AdminNoticeType[]>>(adminNoticeUrl.getNotices());
 
       return response.data;
     },

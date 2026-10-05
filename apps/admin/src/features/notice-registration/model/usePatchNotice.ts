@@ -4,7 +4,11 @@ import { type ApiResponseType, patch } from '@chup/core/shared';
 import { toast } from '@chup/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { adminNoticeQueryKeys, type AdminNoticeType, adminNoticeUrl } from '@/entities/notice';
+import {
+  type AdminNoticeDetailType,
+  adminNoticeQueryKeys,
+  adminNoticeUrl,
+} from '@/entities/notice';
 
 import type { NoticeRegistrationReqType } from './schema';
 
@@ -18,7 +22,7 @@ export const usePatchNotice = () => {
 
   return useMutation({
     mutationFn: async ({ noticeId, body }: PatchNoticeParamsType) => {
-      const response = await patch<ApiResponseType<AdminNoticeType>>(
+      const response = await patch<ApiResponseType<AdminNoticeDetailType>>(
         adminNoticeUrl.patchNotice(noticeId),
         body,
       );

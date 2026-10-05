@@ -2,22 +2,33 @@
 
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@chup/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X } from 'lucide-react';
-import { Controller, useForm } from 'react-hook-form';
+import { Loader2, X } from 'lucide-react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
-import type { AdminNoticeType } from '@/entities/notice';
+import { useGetAdminNotice } from '@/entities/notice';
 
 import { getServerValidationError } from '../lib/getServerErrorMessage';
-import { type NoticeRegistrationReqType, NoticeRegistrationSchema } from '../model/schema';
+import {
+  NOTICE_CONTENT_MAX_LENGTH,
+  type NoticeRegistrationReqType,
+  NoticeRegistrationSchema,
+} from '../model/schema';
 import { usePatchNotice } from '../model/usePatchNotice';
 import { usePostNotice } from '../model/usePostNotice';
 
 interface NoticeRegistrationFormProps {
-  notice?: AdminNoticeType;
+  noticeId?: number;
   onClose: () => void;
 }
 
-const NoticeRegistrationForm = ({ notice, onClose }: NoticeRegistrationFormProps) => {
+const NoticeRegistrationForm = ({ noticeId, onClose }: NoticeRegistrationFormProps) => {
+  const isEditMode = noticeId !== undefined;
+  // 목록 응답에는 본문이 없어 수정 시 상세를 조회해 초기값으로 채운다
+  const {
+    data: notice,
+    isError: isNoticeError,
+    isLoading: isNoticeLoading,
+  } = useGetAdminNotice(noticeId ?? 0);
   const { mutate: postNotice, isPending: isPostPending } = usePostNotice();
   const { mutate: patchNotice, isPending: isPatchPending } = usePatchNotice();
   const {
@@ -27,12 +38,13 @@ const NoticeRegistrationForm = ({ notice, onClose }: NoticeRegistrationFormProps
     formState: { errors },
   } = useForm<NoticeRegistrationReqType>({
     resolver: zodResolver(NoticeRegistrationSchema),
-    defaultValues: {
-      title: notice?.title ?? '',
-      content: notice?.content ?? '',
-    },
+    defaultValues: { title: '', content: '' },
+    values: notice && { title: notice.title, content: notice.content },
+    resetOptions: { keepDirtyValues: true },
   });
+  const content = useWatch({ control, name: 'content' });
   const isPending = isPostPending || isPatchPending;
+  const isDisabled = isEditMode && !notice;
 
   const setServerError = (error: unknown) => {
     const { fieldErrors, message } = getServerValidationError(error);
@@ -46,8 +58,8 @@ const NoticeRegistrationForm = ({ notice, onClose }: NoticeRegistrationFormProps
   };
 
   const handleSubmitForm = (body: NoticeRegistrationReqType) => {
-    if (notice) {
-      patchNotice({ noticeId: notice.id, body }, { onSuccess: onClose, onError: setServerError });
+    if (noticeId !== undefined) {
+      patchNotice({ noticeId, body }, { onSuccess: onClose, onError: setServerError });
       return;
     }
 
@@ -59,7 +71,7 @@ const NoticeRegistrationForm = ({ notice, onClose }: NoticeRegistrationFormProps
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{notice ? '공지사항 수정' : '새 공지사항'}</CardTitle>
+            <CardTitle>{isEditMode ? '공지사항 수정' : '새 공지사항'}</CardTitle>
             <CardDescription>학생에게 전달할 공지 내용을 입력하고 게시하세요.</CardDescription>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="닫기">
@@ -69,12 +81,28 @@ const NoticeRegistrationForm = ({ notice, onClose }: NoticeRegistrationFormProps
       </CardHeader>
       <CardContent>
         <form className="grid gap-4" onSubmit={handleSubmit(handleSubmitForm)}>
+          {isNoticeLoading && (
+            <p className="text-muted-foreground flex items-center gap-2 text-sm">
+              <Loader2 className="size-4 animate-spin" />
+              공지사항을 불러오는 중이에요.
+            </p>
+          )}
+          {isNoticeError && (
+            <p className="text-destructive text-sm">
+              공지사항을 불러오지 못했어요. 잠시 후 다시 시도해주세요.
+            </p>
+          )}
           <div>
             <Controller
               control={control}
               name="title"
               render={({ field }) => (
-                <Input {...field} placeholder="제목" aria-invalid={!!errors.title} />
+                <Input
+                  {...field}
+                  placeholder="제목"
+                  disabled={isDisabled}
+                  aria-invalid={!!errors.title}
+                />
               )}
             />
             {errors.title && (
@@ -89,22 +117,26 @@ const NoticeRegistrationForm = ({ notice, onClose }: NoticeRegistrationFormProps
                 <textarea
                   {...field}
                   placeholder="내용"
+                  disabled={isDisabled}
                   aria-invalid={!!errors.content}
-                  className="border-input focus-visible:border-ring focus-visible:ring-ring/50 [field-sizing:content] min-h-40 w-full resize-none rounded-lg border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-3"
+                  className="border-input focus-visible:border-ring focus-visible:ring-ring/50 [field-sizing:content] min-h-40 w-full resize-none rounded-lg border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-3 disabled:opacity-50"
                 />
               )}
             />
-            {errors.content && (
-              <p className="text-destructive mt-1 text-sm">{errors.content.message}</p>
-            )}
+            <div className="mt-1 flex justify-between gap-2 text-sm">
+              <p className="text-destructive">{errors.content?.message}</p>
+              <p className="text-muted-foreground shrink-0">
+                {content.length.toLocaleString()} / {NOTICE_CONTENT_MAX_LENGTH.toLocaleString()}
+              </p>
+            </div>
           </div>
           {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
               취소
             </Button>
-            <Button type="submit" disabled={isPending}>
-              {notice ? '수정' : '등록'}
+            <Button type="submit" disabled={isPending || isDisabled}>
+              {isEditMode ? '수정' : '등록'}
             </Button>
           </div>
         </form>

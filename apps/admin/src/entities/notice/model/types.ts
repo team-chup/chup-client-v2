@@ -1,10 +1,9 @@
-export interface GetAdminNoticesParamsType {
-  q?: string;
-}
-
 export interface AdminNoticeType {
   id: number;
   title: string;
-  content: string;
   createdAt: string;
+}
+
+export interface AdminNoticeDetailType extends AdminNoticeType {
+  content: string;
 }

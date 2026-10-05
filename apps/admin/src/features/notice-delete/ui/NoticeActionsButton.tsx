@@ -20,7 +20,7 @@ import { useDeleteNotice } from '../model/useDeleteNotice';
 
 interface NoticeActionsButtonProps {
   notice: AdminNoticeType;
-  onEdit: (notice: AdminNoticeType) => void;
+  onEdit: (noticeId: number) => void;
 }
 
 const NoticeActionsButton = ({ notice, onEdit }: NoticeActionsButtonProps) => {
@@ -36,7 +36,7 @@ const NoticeActionsButton = ({ notice, onEdit }: NoticeActionsButtonProps) => {
           <MoreHorizontal />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onEdit(notice)}>공지사항 수정</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onEdit(notice.id)}>공지사항 수정</DropdownMenuItem>
           <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
             공지사항 삭제
           </DropdownMenuItem>

@@ -4,7 +4,11 @@ import { type ApiResponseType, post } from '@chup/core/shared';
 import { toast } from '@chup/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { adminNoticeQueryKeys, type AdminNoticeType, adminNoticeUrl } from '@/entities/notice';
+import {
+  type AdminNoticeDetailType,
+  adminNoticeQueryKeys,
+  adminNoticeUrl,
+} from '@/entities/notice';
 
 import type { NoticeRegistrationReqType } from './schema';
 
@@ -13,7 +17,7 @@ export const usePostNotice = () => {
 
   return useMutation({
     mutationFn: async (body: NoticeRegistrationReqType) => {
-      const response = await post<ApiResponseType<AdminNoticeType>>(
+      const response = await post<ApiResponseType<AdminNoticeDetailType>>(
         adminNoticeUrl.postNotice(),
         body,
       );
