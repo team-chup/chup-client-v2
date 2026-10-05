@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Input } from '@chup/ui';
 import { CircleAlert, Inbox, Loader2, Search } from 'lucide-react';
@@ -9,7 +9,15 @@ import { NoticeCard, useGetNotices } from '@/entities/notice';
 
 const NoticesView = () => {
   const [query, setQuery] = useState<string>('');
-  const { data: notices, isError, isPending } = useGetNotices({ q: query });
+  const { data: notices, isError, isPending } = useGetNotices();
+  // 서버 목록 API가 검색을 지원하지 않아 제목 검색은 클라이언트에서 거른다
+  const filteredNotices = useMemo(() => {
+    const keyword = query.trim().toLowerCase();
+
+    return keyword
+      ? notices?.filter((notice) => notice.title.toLowerCase().includes(keyword))
+      : notices;
+  }, [notices, query]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -42,13 +50,13 @@ const NoticesView = () => {
             공지사항을 불러오지 못했어요. 잠시 후 다시 시도해주세요.
           </div>
         )}
-        {!isPending && !isError && notices?.length === 0 && (
+        {!isPending && !isError && filteredNotices?.length === 0 && (
           <div className="text-muted-foreground col-span-full flex flex-col items-center gap-2 py-10 text-sm">
             <Inbox className="size-5" />
-            등록된 공지사항이 없어요.
+            {query.trim() ? '검색 결과가 없어요.' : '등록된 공지사항이 없어요.'}
           </div>
         )}
-        {notices?.map((notice) => (
+        {filteredNotices?.map((notice) => (
           <NoticeCard key={notice.id} notice={notice} />
         ))}
       </div>

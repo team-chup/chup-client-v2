@@ -5,15 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 
 import { noticeUrl } from '../api/endpoints';
 import { noticeQueryKeys } from './queryKeys';
-import type { GetNoticesParamsType, NoticeSummaryType } from './types';
+import type { NoticeSummaryType } from './types';
 
-export const useGetNotices = (params: GetNoticesParamsType = {}) =>
+export const useGetNotices = () =>
   useQuery({
-    queryKey: noticeQueryKeys.getNotices(params),
+    queryKey: noticeQueryKeys.getNotices(),
     queryFn: async () => {
-      const response = await get<ApiResponseType<NoticeSummaryType[]>>(
-        noticeUrl.getNotices(params),
-      );
+      const response = await get<ApiResponseType<NoticeSummaryType[]>>(noticeUrl.getNotices());
 
       return response.data;
     },

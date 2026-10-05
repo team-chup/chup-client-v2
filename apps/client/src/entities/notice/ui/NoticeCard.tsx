@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@chup/ui';
 import { CalendarDays } from 'lucide-react';
 
+import { formatNoticeDate } from '../lib/formatNoticeDate';
 import type { NoticeSummaryType } from '../model/types';
 
 interface NoticeCardProps {
@@ -19,7 +20,7 @@ const NoticeCard = ({ notice }: NoticeCardProps) => {
         <CardContent>
           <CardDescription className="flex items-center gap-1">
             <CalendarDays className="size-4" />
-            {notice.createdAt}
+            {formatNoticeDate(notice.createdAt)}
           </CardDescription>
         </CardContent>
       </Card>

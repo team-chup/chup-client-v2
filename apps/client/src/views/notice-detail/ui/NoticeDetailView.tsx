@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button, Separator } from '@chup/ui';
 import { ArrowLeft, CalendarDays, CircleAlert, Loader2 } from 'lucide-react';
 
-import { useGetNotice } from '@/entities/notice';
+import { formatNoticeDate, useGetNotice } from '@/entities/notice';
 
 interface NoticeDetailViewProps {
   noticeId: number;
@@ -44,7 +44,7 @@ const NoticeDetailView = ({ noticeId }: NoticeDetailViewProps) => {
           <h1 className="mt-1 text-2xl font-bold text-balance">{notice.title}</h1>
           <p className="text-muted-foreground mt-2 flex items-center gap-1 text-sm">
             <CalendarDays className="size-4" />
-            {notice.createdAt}
+            {formatNoticeDate(notice.createdAt)}
           </p>
           <Separator className="my-6" />
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{notice.content}</p>

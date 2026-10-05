@@ -1,7 +1,3 @@
-export interface GetNoticesParamsType {
-  q?: string;
-}
-
 export interface NoticeSummaryType {
   id: number;
   title: string;
