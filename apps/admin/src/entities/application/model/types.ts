@@ -1,4 +1,5 @@
-export type ApplicationStatusType = 'APPLIED' | 'INTERVIEW_SCHEDULED' | 'PASSED' | 'FAILED';
+export type ApplicationStatusType =
+  'APPLIED' | 'DOCUMENT_FAILED' | 'INTERVIEW_SCHEDULED' | 'PASSED' | 'FAILED';
 
 export type ApplicationSourceType = 'OFFICIAL' | 'EXTERNAL';
 
