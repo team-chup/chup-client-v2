@@ -1,3 +1,11 @@
+import { Suspense } from 'react';
+
 import { JobsView } from '@/views/jobs';
 
-export default JobsView;
+const JobsPage = () => (
+  <Suspense>
+    <JobsView />
+  </Suspense>
+);
+
+export default JobsPage;

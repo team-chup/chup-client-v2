@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import { Button, Input } from '@chup/ui';
 import { CircleAlert, Inbox, Loader2, Search, SlidersHorizontal } from 'lucide-react';
 
@@ -18,10 +20,14 @@ const employmentItems: { label: string; value?: EmploymentType }[] = [
 ];
 
 const JobsView = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const jobIdParam = Number(searchParams.get('jobId'));
+  const selectedJobId = Number.isInteger(jobIdParam) && jobIdParam > 0 ? jobIdParam : null;
+
   const [query, setQuery] = useState<string>('');
   const [employmentType, setEmploymentType] = useState<EmploymentType>();
   const [isDeadlineAscending, setIsDeadlineAscending] = useState<boolean>(false);
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const {
     data: jobs,
     isError,
@@ -31,6 +37,14 @@ const JobsView = () => {
     employmentType,
     sort: isDeadlineAscending ? 'deadline_asc' : undefined,
   });
+
+  // 상세를 URL(`/jobs?jobId=`)과 동기화해 Discord 알림 등 외부 링크로 공고를 바로 열 수 있게 한다
+  const handleSelectedJobChange = (jobId: number | null) => {
+    const params = new URLSearchParams(searchParams);
+    if (jobId) params.set('jobId', String(jobId));
+    else params.delete('jobId');
+    router.replace(params.size > 0 ? `/jobs?${params}` : '/jobs', { scroll: false });
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -105,10 +119,16 @@ const JobsView = () => {
           </div>
         )}
         {jobs?.map((job) => (
-          <JobCard key={job.id} job={job} onOpen={setSelectedJobId} />
+          <JobCard key={job.id} job={job} onOpen={handleSelectedJobChange} />
         ))}
       </div>
-      {selectedJobId && <JobDetail jobId={selectedJobId} onClose={() => setSelectedJobId(null)} />}
+      {selectedJobId && (
+        <JobDetail
+          key={selectedJobId}
+          jobId={selectedJobId}
+          onClose={() => handleSelectedJobChange(null)}
+        />
+      )}
     </div>
   );
 };
